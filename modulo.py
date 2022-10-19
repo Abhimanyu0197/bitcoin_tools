@@ -1,5 +1,5 @@
 def mod(x,m): #modulo operation based on addition and subtraction x(number) m(modulus) for an arbitrarily large integers
-    if x > 0: #to check how many cut_down or add_up ops are necesssary
+    if x > 0: #to check how many cut_down or add_up ops are necessary
         if x < m:
             return x
         else:
