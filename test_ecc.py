@@ -10,7 +10,7 @@ m1 = (86918276961810349294276103416548851884759982251107,28597260016173315074988
 m2 = (86918276961810349294276103416548851884759982251107,87194829221142880348582938487511785107150118762739500766654458540580527283772)
 
 def mod(x,m): #modulo operation based on addition and subtraction x(number) m(modulus) for an arbitrarily large integers
-    if x > 0: #to check how many cut_down or add_up ops are necesssary
+    if x > 0: #to check how many cut_down or add_up ops are necessary
         if x < m:
             return x
         else:
