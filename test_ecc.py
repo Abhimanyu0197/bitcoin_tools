@@ -9,17 +9,23 @@ last = (550662630222773436695787188951685343262506034537775941755001873603891167
 m1 = (86918276961810349294276103416548851884759982251107,28597260016173315074988046521176122746119865902901063272803125467328307387891)
 m2 = (86918276961810349294276103416548851884759982251107,87194829221142880348582938487511785107150118762739500766654458540580527283772)
 
-def mod(x,m): #modulo operation based on addition and subtraction x(number) m(modulus)
-    if x > 0:
+def mod(x,m): #modulo operation based on addition and subtraction x(number) m(modulus) for an arbitrarily large integers
+    if x > 0: #to check how many cut_down or add_up ops are necesssary
         if x < m:
             return x
         else:
-            while x >= m:
-                x -= m
+            res = x // m
+            print(f'Positive[+] number of cut_down ops [{res}]')
+            x = x - (res*m)
             return x
     else:
-        while x < 0:
+        res = abs(x) // m
+        x = x + (res*m)
+        if x == 0:
+            print(f'Negative[-] number of add_up ops [{res}]')
+        else:
             x += m
+            print(f'Negative[-] number of add_up ops [{res+1}]')     
         return x
         
 def oncurve(p):
@@ -50,7 +56,6 @@ def inv(a):
     
 def double(a):
     Lam = ((3*a[0]*a[0]) * modinv((2*a[1]),P))
-    #print(f'LamDouble: {Lam}')
     Lam = Lam % P
     x = (Lam*Lam-2*a[0])
     x = x % P
@@ -60,7 +65,6 @@ def double(a):
         
 def add(a,b):
     LamAdd = ((b[1]-a[1]) * modinv(b[0]-a[0],P))
-    #print(f'LamAdd: {LamAdd}')
     LamAdd = LamAdd % P
     x = (LamAdd*LamAdd-a[0]-b[0])
     x = x % P    
@@ -83,7 +87,6 @@ def add_full(a,b):
         return double(a)
     else:
         LamAdd = ((b[1]-a[1]) * modinv(b[0]-a[0],P)) % P
-        print(f'AS:{LamAdd}')
         x = (LamAdd*LamAdd-a[0]-b[0]) % P
         y = (LamAdd*(a[0]-x)-a[1]) % P
         return (x,y)
