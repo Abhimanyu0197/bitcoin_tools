@@ -1,4 +1,4 @@
-starting_y = 0x0
+starting_y = 0xceb6cbbcdbdf5ef7150682150f4ce2c6f4807b349827dcdbdd1f2efa885a2630
 p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
 beta = 0x7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee
 
