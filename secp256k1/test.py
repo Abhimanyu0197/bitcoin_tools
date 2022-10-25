@@ -8,4 +8,7 @@ G6 = secp256k1.point_addition(P, G4)
 G2 = secp256k1.point_subtraction(G6, G4)
 G2 = secp256k1.point_division(G6, 3)
 G12 = secp256k1.point_doubling(G6)
+G = secp256k1.point_halving(G2)
+print(secp256k1.on_curve(G))
+print(secp256k1.point_negation(G))
 

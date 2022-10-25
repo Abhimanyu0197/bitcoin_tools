@@ -102,6 +102,9 @@ def point_negation(P):
 def point_doubling(P):
     return curve.add(P, P)
     
+def point_halving(P):
+    return curve.mul(P, gmpy2.invert(gmpy2.mpz(2), curve.n))
+    
 def point_to_upub(P):
     return curve.uncompressed(P)
 
