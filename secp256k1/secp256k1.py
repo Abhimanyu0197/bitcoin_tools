@@ -99,6 +99,9 @@ def point_subtraction(P, Q):
 def point_negation(P):
     return curve.inv(P)
     
+def point_doubling(P):
+    return curve.add(P, P)
+    
 def point_to_upub(P):
     return curve.uncompressed(P)
 
