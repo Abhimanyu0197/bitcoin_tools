@@ -12,7 +12,7 @@ while True:
         print(f'Point is even (has Q=k(even scalar)*G)')
         break
     if point_subtraction(A, B) == curve.g:
-        print(f'Point is odd (has Q=k(odd scalar)*G')
+        print(f'Point is odd (has Q=k(odd scalar)*G)')
         break
     A = point_subtraction(A, curve.g)
     B = point_addition(B, curve.g)
