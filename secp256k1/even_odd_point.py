@@ -5,12 +5,12 @@ Based on the math of first grade of school.
   6+2
   5+3
   4+4
-(4+4) 4 <-> 4 condition: this point is even
+ (4+4) 4 <-> 4 condition: this point is even
 9=8+1
   7+2
   6+3
   5+4
-(5+4) 5 <-> 4 condition: this point is odd
+ (5+4) 5 <-> 4 condition: this point is odd
 '''
 from secp256k1 import *
 
