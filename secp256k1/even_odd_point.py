@@ -1,3 +1,17 @@
+'''
+This method cannot help break secp256k1 security but nevertheless answers some questions.
+There is a way to determine whether point is even or odd. Based on the math of first grade of school.
+8=7+1
+    6+2
+    5+3
+    4+4
+(4+4) 4 <-> 4 condition: this point is even
+9=8+1
+    7+2
+    6+3
+    5+4
+(5+4) 5 <-> 4 condition: this point is odd
+'''
 from secp256k1 import *
 
 #Q = [89565891926547004231252920425935692360644145829622209833684329913297188986597,
