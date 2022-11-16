@@ -2,14 +2,14 @@
 This method cannot help break secp256k1 security but nevertheless answers the question of even or odd point without calculating points scalar.
 Based on the math of first grade of school.
 8=7+1
-    6+2
-    5+3
-    4+4
+  6+2
+  5+3
+  4+4
 (4+4) 4 <-> 4 condition: this point is even
 9=8+1
-    7+2
-    6+3
-    5+4
+  7+2
+  6+3
+  5+4
 (5+4) 5 <-> 4 condition: this point is odd
 '''
 from secp256k1 import *
