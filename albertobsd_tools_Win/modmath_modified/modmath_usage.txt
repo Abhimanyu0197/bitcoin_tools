@@ -1,3 +1,5 @@
+Modular Math secp256k1 N (group order) as modulus. Results of operations are the same as you would it with points(public keys).
+
 $ ./modmath 1 / 2 10
 Result: 57896044618658097711785492504343953926418782139537452191302581570759080747169
 
