@@ -1,6 +1,9 @@
 Modular Math secp256k1 N (group order) as modulus. Results of operations are the same as you would it with points(public keys).
 This way you can do research on the secp256k1 curve.
 
+10 - prints result in decimal
+16 - prints result in hex
+
 $ ./modmath 1 / 2 10
 Result: 57896044618658097711785492504343953926418782139537452191302581570759080747169
 
