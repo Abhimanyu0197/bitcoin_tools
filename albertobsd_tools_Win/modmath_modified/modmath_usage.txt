@@ -1,4 +1,4 @@
-Modular Math secp256k1 N (group order) as modulus. Results of operations are the same as you would it with points(public keys).
+Modular Math. secp256k1 N (group order) as modulus. Results of operations are the same as you would it with points(public keys).
 This way you can do research on the secp256k1 curve.
 
 10 - prints result in decimal
