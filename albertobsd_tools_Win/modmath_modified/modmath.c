@@ -17,7 +17,7 @@ int main(int argc, char **argv)  {
     mpz_init_set_ui(arg_4, 0);	
     mpz_init(inverse_multiplier);
 	
-    if(argc < 5)	{
+    if(argc < 5) {
 	printf("Missing parameters\n");
 	exit(0);
     }
@@ -26,7 +26,7 @@ int main(int argc, char **argv)  {
     mpz_set_str(B, argv[3], 0);
     mpz_set_str(arg_4, argv[4], 0);
     
-    switch(argv[2][0])	{
+    switch(argv[2][0]) {
 		case '+':
 			mpz_add(C, A, B);	
 			mpz_mod(C, C, secp256k1_N);
