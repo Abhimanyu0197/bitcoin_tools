@@ -28,21 +28,21 @@ int main(int argc, char **argv)  {
     
     switch(argv[2][0])	{
 		case '+':
-		mpz_add(C, A, B);	
-		mpz_mod(C, C, secp256k1_N);
+		    mpz_add(C, A, B);	
+		    mpz_mod(C, C, secp256k1_N);
 		break;
 		case '-':
-		mpz_sub(C, A, B);
-		mpz_mod(C, C, secp256k1_N);
+		    mpz_sub(C, A, B);
+		    mpz_mod(C, C, secp256k1_N);
 		break;
 		case '/':
-		mpz_invert(inverse_multiplier, B, secp256k1_N);
-		mpz_mul(C, A, inverse_multiplier);
-		mpz_mod(C, C, secp256k1_N);
+		    mpz_invert(inverse_multiplier, B, secp256k1_N);
+		    mpz_mul(C, A, inverse_multiplier);
+		    mpz_mod(C, C, secp256k1_N);
 		break;
 		case 'x':
-		mpz_mul(C, A, B);
-		mpz_mod(C, C, secp256k1_N);
+		    mpz_mul(C, A, B);
+		    mpz_mod(C, C, secp256k1_N);
 		break;		
 	}
     
