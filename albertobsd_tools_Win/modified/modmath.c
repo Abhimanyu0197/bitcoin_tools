@@ -15,12 +15,12 @@ int main(int argc, char **argv)  {
     mpz_init_set_ui(n10, 10);
     mpz_init_set_ui(n16, 16);
     mpz_init_set_ui(arg_4, 0);	
-	mpz_init(inverse_multiplier);
+    mpz_init(inverse_multiplier);
 	
-	if(argc < 5)	{
-		printf("Missing parameters\n");
-		exit(0);
-	}
+    if(argc < 5)	{
+	printf("Missing parameters\n");
+	exit(0);
+    }
 		
     mpz_set_str(A, argv[1], 0);
     mpz_set_str(B, argv[3], 0);
