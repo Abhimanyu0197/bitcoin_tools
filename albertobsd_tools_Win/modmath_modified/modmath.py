@@ -8,16 +8,16 @@ def multiplicative_inverse(x, m):
 def additive_inverse(a):
     return N - a
     
-def add(a,b): #addition
+def add(a, b): #addition
     return (a + b) % N
 
-def sub(a,b): #subtraction
+def sub(a, b): #subtraction
     return (a + additive_inverse(b)) % N
 
-def mul(a,b): #multiplication
+def mul(a, b): #multiplication
     return (a * b) % N
     
-def div(a,b): #division
+def div(a, b): #division
     return (a * multiplicative_inverse(b, N)) % N
 
 print(div(1,3))
