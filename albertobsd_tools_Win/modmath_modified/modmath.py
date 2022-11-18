@@ -20,4 +20,4 @@ def mul(a, b): #multiplication
 def div(a, b): #division
     return (a * multiplicative_inverse(b, N)) % N
 
-print(div(1,3))
+print(div(1, 3))
