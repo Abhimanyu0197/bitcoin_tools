@@ -1,3 +1,13 @@
+'''
+This method cannot help break secp256k1 security but nevertheless answers the question whether point is even or odd  without calculating its scalar.
+Based on consecutive subtraction of 2: even will come to 2, odd will come to 3.
+(8)8-2=6
+   6-2=4
+   4-2=2
+(9)9-2=7
+   7-2=5
+   5-2=3
+'''
 from secp256k1 import *
 
 curve_2G = scalar_multiplication(2)
