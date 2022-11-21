@@ -1,6 +1,6 @@
 /*
 	https://github.com/masterzorag/ec_gmp
-    ec_gmp_p_mul.c
+        ec_gmp_p_mul.c
 	2014 masterzorag@gmail.com
     
 	entirely based on the gmplib implementation of elliptic curve scalar point 
