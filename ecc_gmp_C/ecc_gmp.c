@@ -222,7 +222,7 @@ bool Point_On_Curve(struct Point A) {
     mpz_t X,Y;
     mpz_init(X); mpz_init(Y);
     mpz_pow_ui(X, A.x, 3);
-    mpz_add_ui(X, X, 7);
+    mpz_add(X, X, EC.b);
     mpz_mod(X, X, EC.p);
     mpz_pow_ui(Y, A.y, 2);
     mpz_mod(Y, Y, EC.p);
