@@ -262,12 +262,12 @@ int main(int argc, char *argv[])
     mpz_set_str(Curve_G.x, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", 0);
     mpz_set_str(Curve_G.y, "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", 0);
     
-	struct Point R, Q;
-	mpz_init_set_ui(R.x, 0); mpz_init_set_ui(R.y, 0);
+    struct Point R, Q;
+    mpz_init_set_ui(R.x, 0); mpz_init_set_ui(R.y, 0);
     mpz_init_set_ui(Q.x, 0); mpz_init_set_ui(Q.y, 0);
 	
-	mpz_t m;
-	mpz_init(m);
+    mpz_t m;
+    mpz_init(m);
     
     puts("");
     printf("Point_Doubling secp256k1 generator point G -> 2G\n");
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
     
     mpz_clear(EC.a); mpz_clear(EC.b); mpz_clear(EC.p); mpz_clear(EC.n);// free memory for mpz variables
     mpz_clear(Curve_G.x); mpz_clear(Curve_G.y);
-	mpz_clear(R.x); mpz_clear(R.y);
+    mpz_clear(R.x); mpz_clear(R.y);
     mpz_clear(Q.x); mpz_clear(Q.y);
     mpz_clear(m);	
     
