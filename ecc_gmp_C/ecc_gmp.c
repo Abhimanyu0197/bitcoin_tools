@@ -48,64 +48,64 @@ void Point_Doubling(struct Point P, struct Point *R)
 
 void Point_Addition(struct Point P, struct Point Q, struct Point *R)
 {
-	if(mpz_cmp_ui(P.x, 0) == 0 && mpz_cmp_ui(P.y, 0) == 0) {
-		mpz_set(R->x, Q.x);
-		mpz_set(R->y, Q.y);
-		return;
-	}
+    if(mpz_cmp_ui(P.x, 0) == 0 && mpz_cmp_ui(P.y, 0) == 0) {
+	mpz_set(R->x, Q.x);
+	mpz_set(R->y, Q.y);
+	return;
+    }
     
-	if(mpz_cmp_ui(Q.x, 0) == 0 && mpz_cmp_ui(Q.y, 0) == 0) {
-		mpz_set(R->x, P.x);
-		mpz_set(R->y, P.y);
-		return;
-	}
+    if(mpz_cmp_ui(Q.x, 0) == 0 && mpz_cmp_ui(Q.y, 0) == 0) {
+	mpz_set(R->x, P.x);
+	mpz_set(R->y, P.y);
+	return;
+    }
     
-	mpz_t temp;
-	mpz_init(temp);
+    mpz_t temp;
+    mpz_init(temp);
     
-	if(mpz_cmp_ui(Q.y, 0) != 0) { 
-		mpz_sub(temp, EC.p, Q.y);
-		mpz_mod(temp, temp, EC.p);
-	} else
-		mpz_set_ui(temp, 0);
+    if(mpz_cmp_ui(Q.y, 0) != 0) { 
+	mpz_sub(temp, EC.p, Q.y);
+	mpz_mod(temp, temp, EC.p);
+    } else
+	mpz_set_ui(temp, 0);
         
-	if(mpz_cmp(P.y, temp) == 0 && mpz_cmp(P.x, Q.x) == 0) {
-		mpz_set_ui(R->x, 0);
-		mpz_set_ui(R->y, 0);
-		mpz_clear(temp);
-		return;
-	}
+    if(mpz_cmp(P.y, temp) == 0 && mpz_cmp(P.x, Q.x) == 0) {
+	mpz_set_ui(R->x, 0);
+	mpz_set_ui(R->y, 0);
+	mpz_clear(temp);
+	return;
+    }
 	
-	if(mpz_cmp(P.x, Q.x) == 0 && mpz_cmp(P.y, Q.y) == 0)	{
-		Point_Doubling(P, R);		
-		mpz_clear(temp);
-		return;		
-	} else {
-		mpz_t slope;
-		mpz_init_set_ui(slope, 0);
+    if(mpz_cmp(P.x, Q.x) == 0 && mpz_cmp(P.y, Q.y) == 0)	{
+	Point_Doubling(P, R);		
+	mpz_clear(temp);
+	return;		
+    } else {
+	mpz_t slope;
+	mpz_init_set_ui(slope, 0);
         
-		mpz_sub(temp, P.x, Q.x);
-		mpz_mod(temp, temp, EC.p);
+	mpz_sub(temp, P.x, Q.x);
+	mpz_mod(temp, temp, EC.p);
         
-		mpz_invert(temp, temp, EC.p);
-		mpz_sub(slope, P.y, Q.y);
-		mpz_mul(slope, slope, temp);
-		mpz_mod(slope, slope, EC.p);
+	mpz_invert(temp, temp, EC.p);
+	mpz_sub(slope, P.y, Q.y);
+	mpz_mul(slope, slope, temp);
+	mpz_mod(slope, slope, EC.p);
         
-		mpz_mul(R->x, slope, slope);
-		mpz_sub(R->x, R->x, P.x);
-		mpz_sub(R->x, R->x, Q.x);
-		mpz_mod(R->x, R->x, EC.p);
+	mpz_mul(R->x, slope, slope);
+	mpz_sub(R->x, R->x, P.x);
+	mpz_sub(R->x, R->x, Q.x);
+	mpz_mod(R->x, R->x, EC.p);
         
-		mpz_sub(temp, P.x, R->x);
-		mpz_mul(R->y, slope, temp);
-		mpz_sub(R->y, R->y, P.y);
-		mpz_mod(R->y, R->y, EC.p);
+	mpz_sub(temp, P.x, R->x);
+	mpz_mul(R->y, slope, temp);
+	mpz_sub(R->y, R->y, P.y);
+	mpz_mod(R->y, R->y, EC.p);
         		
-		mpz_clear(temp);
-		mpz_clear(slope);
-		return;
-	}
+	mpz_clear(temp);
+	mpz_clear(slope);
+	return;
+    }
 }
 
 void Scalar_Multiplication(struct Point *R, mpz_t m)
