@@ -234,7 +234,7 @@ bool Point_On_Curve(struct Point A) {
     
 }
 
-const char* Point_To_Upub(struct Point A) {
+const char * Point_To_Upub(struct Point A) {
     
     char *dst = malloc(sizeof(char) * 132);
     gmp_snprintf(dst, 131, "04%0.64Zx%0.64Zx", A.x, A.y);
