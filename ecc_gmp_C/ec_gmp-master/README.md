@@ -1,6 +1,6 @@
 ec_gmp
 ======
-<a href="https://github.com/masterzorag/ec_gmp">https://github.com/masterzorag/ec_gmp</a>
+<a href="https://github.com/masterzorag/ec_gmp">https://github.com/masterzorag/ec_gmp</a><br>
 Elliptic Curve gmplib implementation of scalar point multiplication
 
 entirely based on the code by Kuldeep Bhardwaj and Sanjay Chaudhary
