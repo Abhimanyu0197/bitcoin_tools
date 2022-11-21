@@ -113,35 +113,35 @@ void Scalar_Multiplication(struct Point *R, mpz_t m)
     struct Point P;
     mpz_init(P.x); mpz_init(P.y);
     mpz_set(P.x, Curve_G.x); mpz_set(P.y, Curve_G.y);
-	struct Point Q, T;
-	mpz_init(Q.x); mpz_init(Q.y);
-	mpz_init(T.x); mpz_init(T.y);
-	long no_of_bits, loop;	
-	no_of_bits = mpz_sizeinbase(m, 2);
-	mpz_set_ui(R->x, 0);
-	mpz_set_ui(R->y, 0);
-	if(mpz_cmp_ui(m, 0) == 0)
-		return;
+    struct Point Q, T;
+    mpz_init(Q.x); mpz_init(Q.y);
+    mpz_init(T.x); mpz_init(T.y);
+    long no_of_bits, loop;	
+    no_of_bits = mpz_sizeinbase(m, 2);
+    mpz_set_ui(R->x, 0);
+    mpz_set_ui(R->y, 0);
+    if(mpz_cmp_ui(m, 0) == 0)
+	return;
         		
-	mpz_set(Q.x, P.x);
-	mpz_set(Q.y, P.y);
+    mpz_set(Q.x, P.x);
+    mpz_set(Q.y, P.y);
     
-	if(mpz_tstbit(m, 0) == 1){
-		mpz_set(R->x, P.x);
-		mpz_set(R->y, P.y);
-	}
+    if(mpz_tstbit(m, 0) == 1){
+	mpz_set(R->x, P.x);
+	mpz_set(R->y, P.y);
+    }
 
-	for(loop = 1; loop < no_of_bits; loop++) {
-		mpz_set_ui(T.x, 0);
-		mpz_set_ui(T.y, 0);
-		Point_Doubling(Q, &T);
-		mpz_set(Q.x, T.x);
-		mpz_set(Q.y, T.y);
-		mpz_set(T.x, R->x);
-		mpz_set(T.y, R->y);
-		if(mpz_tstbit(m, loop))
-			Point_Addition(T, Q, R);
-	}
+    for(loop = 1; loop < no_of_bits; loop++) {
+	mpz_set_ui(T.x, 0);
+	mpz_set_ui(T.y, 0);
+	Point_Doubling(Q, &T);
+	mpz_set(Q.x, T.x);
+	mpz_set(Q.y, T.y);
+	mpz_set(T.x, R->x);
+	mpz_set(T.y, R->y);
+	if(mpz_tstbit(m, loop))
+	    Point_Addition(T, Q, R);
+    }
     
     mpz_clear(P.x); mpz_clear(P.y);
     mpz_clear(Q.x); mpz_clear(Q.y);
@@ -150,43 +150,43 @@ void Scalar_Multiplication(struct Point *R, mpz_t m)
 
 void Point_Multiplication(struct Point P, struct Point *R, mpz_t m)
 {
-	struct Point Q, T;
-	mpz_init(Q.x); mpz_init(Q.y);
-	mpz_init(T.x); mpz_init(T.y);
-	long no_of_bits, loop;	
-	no_of_bits = mpz_sizeinbase(m, 2);
-	mpz_set_ui(R->x, 0);
-	mpz_set_ui(R->y, 0);
+    struct Point Q, T;
+    mpz_init(Q.x); mpz_init(Q.y);
+    mpz_init(T.x); mpz_init(T.y);
+    long no_of_bits, loop;	
+    no_of_bits = mpz_sizeinbase(m, 2);
+    mpz_set_ui(R->x, 0);
+    mpz_set_ui(R->y, 0);
     
-	if(mpz_cmp_ui(m, 0) == 0)
-		return;
+    if(mpz_cmp_ui(m, 0) == 0)
+	return;
 		
-	mpz_set(Q.x, P.x);
-	mpz_set(Q.y, P.y);
+    mpz_set(Q.x, P.x);
+    mpz_set(Q.y, P.y);
     
-	if(mpz_tstbit(m, 0) == 1){
-		mpz_set(R->x, P.x);
-		mpz_set(R->y, P.y);
-	}
+    if(mpz_tstbit(m, 0) == 1){
+	mpz_set(R->x, P.x);
+	mpz_set(R->y, P.y);
+    }
 
-	for(loop = 1; loop < no_of_bits; loop++) {
-		mpz_set_ui(T.x, 0);
-		mpz_set_ui(T.y, 0);
-		Point_Doubling(Q, &T);
-		mpz_set(Q.x, T.x);
-		mpz_set(Q.y, T.y);
-		mpz_set(T.x, R->x);
-		mpz_set(T.y, R->y);
-		if(mpz_tstbit(m, loop))
-			Point_Addition(T, Q, R);
-	}
+    for(loop = 1; loop < no_of_bits; loop++) {
+	mpz_set_ui(T.x, 0);
+	mpz_set_ui(T.y, 0);
+	Point_Doubling(Q, &T);
+	mpz_set(Q.x, T.x);
+	mpz_set(Q.y, T.y);
+	mpz_set(T.x, R->x);
+	mpz_set(T.y, R->y);
+	if(mpz_tstbit(m, loop))
+	    Point_Addition(T, Q, R);
+    }
 
-	mpz_clear(Q.x); mpz_clear(Q.y);
-	mpz_clear(T.x); mpz_clear(T.y);
+    mpz_clear(Q.x); mpz_clear(Q.y);
+    mpz_clear(T.x); mpz_clear(T.y);
 }
 
 void Point_Negation(struct Point *A) {
-	mpz_sub(A->y, EC.p, A->y);
+    mpz_sub(A->y, EC.p, A->y);
 }
 
 void Point_Subtraction(struct Point A, struct Point *B, struct Point *R) {
