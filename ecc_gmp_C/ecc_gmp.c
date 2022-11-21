@@ -145,8 +145,8 @@ void Scalar_Multiplication(struct Point *R, mpz_t m)
 	}
     
     mpz_clear(P.x); mpz_clear(P.y);
-	mpz_clear(Q.x); mpz_clear(Q.y);
-	mpz_clear(T.x); mpz_clear(T.y);    
+    mpz_clear(Q.x); mpz_clear(Q.y);
+    mpz_clear(T.x); mpz_clear(T.y);    
 }
 
 void Point_Multiplication(struct Point P, struct Point *R, mpz_t m)
@@ -203,7 +203,7 @@ void Point_Subtraction(struct Point A, struct Point *B, struct Point *R) {
         mpz_init(Q.x);
         mpz_init(Q.y);        
         mpz_set(Q.x, B->x);
-	    mpz_set(Q.y, B->y);
+	mpz_set(Q.y, B->y);
         Point_Addition(A, Q, R);
         mpz_clear(Q.x); mpz_clear(Q.y);
         return;      
