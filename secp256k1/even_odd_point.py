@@ -1,5 +1,5 @@
 '''
-This method cannot help break secp256k1 security but nevertheless answers the question whether point is even or odd  without calculating its scalar.
+This method cannot help break secp256k1 security but answers the question whether point is even or odd  without calculating its scalar.
 Based on the math of first grade of school.
 8=7+1
   6+2
