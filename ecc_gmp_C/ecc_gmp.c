@@ -7,13 +7,13 @@
 struct Elliptic_Curve {
     mpz_t a;
     mpz_t b;
-	mpz_t p;
+    mpz_t p;
     mpz_t n;
 };
 
 struct Point {
-	mpz_t x;
-	mpz_t y;
+    mpz_t x;
+    mpz_t y;
 };
 
 struct Elliptic_Curve EC; 
@@ -21,9 +21,9 @@ struct Point Curve_G;
 
 void Point_Doubling(struct Point P, struct Point *R)
 {
-	mpz_t slope, temp;
-	mpz_init(temp);
-	mpz_init(slope);
+    mpz_t slope, temp;
+    mpz_init(temp);
+    mpz_init(slope);
     	
     mpz_mul_ui(temp, P.y, 2);
     mpz_invert(temp, temp, EC.p);
@@ -43,8 +43,8 @@ void Point_Doubling(struct Point P, struct Point *R)
     mpz_sub(R->y, R->y, P.y);
     mpz_mod(R->y, R->y, EC.p);
     
-	mpz_clear(temp);
-	mpz_clear(slope);
+    mpz_clear(temp);
+    mpz_clear(slope);
 }
 
 void Point_Addition(struct Point P, struct Point Q, struct Point *R)
@@ -324,5 +324,5 @@ int main(int argc, char *argv[])
     mpz_clear(Q.x); mpz_clear(Q.y);
     mpz_clear(m);	
     
-	return 0;
+    return 0;
 }
