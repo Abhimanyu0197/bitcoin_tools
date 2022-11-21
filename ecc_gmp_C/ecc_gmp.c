@@ -233,9 +233,10 @@ bool Point_On_Curve(struct Point A) {
     
 }
 
+static char dst[132];
+
 const char * Point_To_Upub(struct Point A) {
     
-    char *dst = malloc(sizeof(char) * 132);
     gmp_snprintf(dst, 131, "04%0.64Zx%0.64Zx", A.x, A.y);
     return dst;
     
@@ -243,7 +244,6 @@ const char * Point_To_Upub(struct Point A) {
 
 const char * Point_To_Cpub(struct Point A) {
     
-    char *dst = malloc(sizeof(char) * 68);
     if(mpz_tstbit(A.y, 0) == 0) { gmp_snprintf(dst, 67, "02%0.64Zx", A.x); }
     else { gmp_snprintf(dst, 67,"03%0.64Zx", A.x); }
     return dst;
