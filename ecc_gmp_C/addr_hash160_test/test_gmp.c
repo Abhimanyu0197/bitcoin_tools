@@ -275,9 +275,6 @@ const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
     char bin_publickey[65];
     char bin_sha256[32];
     char bin_rmd160[20];
-    memset(hash160, 0, 42);
-    memset(upub, 0, 130);
-    memset(cpub, 0, 68);
     if(compressed) {
 	if(mpz_tstbit(pubkey.y, 0) == 0) {
 	    gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
@@ -304,9 +301,6 @@ const char * Point_To_Address(struct Point pubkey, bool compressed) {
     char bin_sha256[32];
     char bin_digest[60];
     size_t pubaddress_size = 50;
-    memset(address, 0, 50);
-    memset(upub, 0, 130);
-    memset(cpub, 0, 68);
     if(compressed) {
 	if(mpz_tstbit(pubkey.y, 0) == 0) {
 	    gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
