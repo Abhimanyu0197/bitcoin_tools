@@ -238,15 +238,15 @@ static char cpub[68];
 
 const char * Point_To_Upub(struct Point A) {
     
-    gmp_snprintf(upub, 131, "04%0.64Zx%0.64Zx", A.x, A.y);
+    gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", A.x, A.y);
     return upub;
     
 }
 
 const char * Point_To_Cpub(struct Point A) {
     
-    if(mpz_tstbit(A.y, 0) == 0) { gmp_snprintf(cpub, 67, "02%0.64Zx", A.x); }
-    else { gmp_snprintf(cpub, 67,"03%0.64Zx", A.x); }
+    if(mpz_tstbit(A.y, 0) == 0) { gmp_snprintf(cpub, 68, "02%0.64Zx", A.x); }
+    else { gmp_snprintf(cpub, 68,"03%0.64Zx", A.x); }
     return cpub;
     
 }
