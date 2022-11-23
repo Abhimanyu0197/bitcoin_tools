@@ -14,15 +14,15 @@ struct Elliptic_Curve {
     
     mpz_t a;
     mpz_t b;
-	mpz_t p;
+    mpz_t p;
     mpz_t n;
     
 };
 
 struct Point {
     
-	mpz_t x;
-	mpz_t y;
+    mpz_t x;
+    mpz_t y;
     
 };
 
@@ -31,9 +31,9 @@ struct Point Curve_G;
 
 void Point_Doubling(struct Point P, struct Point *R) {
     
-	mpz_t slope, temp;
-	mpz_init(temp);
-	mpz_init(slope);
+    mpz_t slope, temp;
+    mpz_init(temp);
+    mpz_init(slope);
     	
     mpz_mul_ui(temp, P.y, 2);
     mpz_invert(temp, temp, EC.p);
@@ -53,8 +53,8 @@ void Point_Doubling(struct Point P, struct Point *R) {
     mpz_sub(R->y, R->y, P.y);
     mpz_mod(R->y, R->y, EC.p);
     
-	mpz_clear(temp);
-	mpz_clear(slope);
+    mpz_clear(temp);
+    mpz_clear(slope);
 }
 
 void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
@@ -63,65 +63,65 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
     mpz_init(S.x); mpz_init(S.y);        
     mpz_set(S.x, P.x); mpz_set(S.y, P.y);
         
-	if(mpz_cmp_ui(S.x, 0) == 0 && mpz_cmp_ui(S.y, 0) == 0) {
-		mpz_set(R->x, Q.x);
-		mpz_set(R->y, Q.y);
-		return;
-	}
+    if(mpz_cmp_ui(S.x, 0) == 0 && mpz_cmp_ui(S.y, 0) == 0) {
+	mpz_set(R->x, Q.x);
+	mpz_set(R->y, Q.y);
+	return;
+    }
     
-	if(mpz_cmp_ui(Q.x, 0) == 0 && mpz_cmp_ui(Q.y, 0) == 0) {
-		mpz_set(R->x, S.x);
-		mpz_set(R->y, S.y);
-		return;
-	}
+    if(mpz_cmp_ui(Q.x, 0) == 0 && mpz_cmp_ui(Q.y, 0) == 0) {
+	mpz_set(R->x, S.x);
+	mpz_set(R->y, S.y);
+	return;
+    }
     
-	mpz_t temp;
-	mpz_init(temp);
+    mpz_t temp;
+    mpz_init(temp);
     
-	if(mpz_cmp_ui(Q.y, 0) != 0) { 
-		mpz_sub(temp, EC.p, Q.y);
-		mpz_mod(temp, temp, EC.p);
-	} else
-		mpz_set_ui(temp, 0);
+    if(mpz_cmp_ui(Q.y, 0) != 0) { 
+	mpz_sub(temp, EC.p, Q.y);
+	mpz_mod(temp, temp, EC.p);
+    } else
+	mpz_set_ui(temp, 0);
         
-	if(mpz_cmp(S.y, temp) == 0 && mpz_cmp(S.x, Q.x) == 0) {
-		mpz_set_ui(R->x, 0);
-		mpz_set_ui(R->y, 0);
-		mpz_clear(temp);
-		return;
-	}
+    if(mpz_cmp(S.y, temp) == 0 && mpz_cmp(S.x, Q.x) == 0) {
+	mpz_set_ui(R->x, 0);
+	mpz_set_ui(R->y, 0);
+	mpz_clear(temp);
+	return;
+    }
 	
-	if(mpz_cmp(S.x, Q.x) == 0 && mpz_cmp(S.y, Q.y) == 0)	{
-		Point_Doubling(S, R);		
-		mpz_clear(temp);
-		return;		
-	} else {
-		mpz_t slope;
-		mpz_init_set_ui(slope, 0);
+    if(mpz_cmp(S.x, Q.x) == 0 && mpz_cmp(S.y, Q.y) == 0)	{
+	Point_Doubling(S, R);		
+	mpz_clear(temp);
+	return;		
+    } else {
+	mpz_t slope;
+	mpz_init_set_ui(slope, 0);
         
-		mpz_sub(temp, S.x, Q.x);
-		mpz_mod(temp, temp, EC.p);
+	mpz_sub(temp, S.x, Q.x);
+	mpz_mod(temp, temp, EC.p);
         
-		mpz_invert(temp, temp, EC.p);
-		mpz_sub(slope, S.y, Q.y);
-		mpz_mul(slope, slope, temp);
-		mpz_mod(slope, slope, EC.p);
+	mpz_invert(temp, temp, EC.p);
+	mpz_sub(slope, S.y, Q.y);
+	mpz_mul(slope, slope, temp);
+	mpz_mod(slope, slope, EC.p);
         
-		mpz_mul(R->x, slope, slope);
-		mpz_sub(R->x, R->x, S.x);
-		mpz_sub(R->x, R->x, Q.x);
-		mpz_mod(R->x, R->x, EC.p);
+	mpz_mul(R->x, slope, slope);
+	mpz_sub(R->x, R->x, S.x);
+	mpz_sub(R->x, R->x, Q.x);
+	mpz_mod(R->x, R->x, EC.p);
         
-		mpz_sub(temp, S.x, R->x);
-		mpz_mul(R->y, slope, temp);
-		mpz_sub(R->y, R->y, S.y);
-		mpz_mod(R->y, R->y, EC.p);
+	mpz_sub(temp, S.x, R->x);
+	mpz_mul(R->y, slope, temp);
+	mpz_sub(R->y, R->y, S.y);
+	mpz_mod(R->y, R->y, EC.p);
         		
-		mpz_clear(temp);
-		mpz_clear(slope);
+	mpz_clear(temp);
+	mpz_clear(slope);
         mpz_clear(S.x); mpz_clear(S.y);
-		return;
-	}
+	return;
+    }
 }
 
 void Scalar_Multiplication(struct Point *R, mpz_t m) {
@@ -129,81 +129,81 @@ void Scalar_Multiplication(struct Point *R, mpz_t m) {
     struct Point P;
     mpz_init(P.x); mpz_init(P.y);
     mpz_set(P.x, Curve_G.x); mpz_set(P.y, Curve_G.y);
-	struct Point Q, T;
-	mpz_init(Q.x); mpz_init(Q.y);
-	mpz_init(T.x); mpz_init(T.y);
-	long no_of_bits, loop;	
-	no_of_bits = mpz_sizeinbase(m, 2);
-	mpz_set_ui(R->x, 0);
-	mpz_set_ui(R->y, 0);
-	if(mpz_cmp_ui(m, 0) == 0)
-		return;
+    struct Point Q, T;
+    mpz_init(Q.x); mpz_init(Q.y);
+    mpz_init(T.x); mpz_init(T.y);
+    long no_of_bits, loop;	
+    no_of_bits = mpz_sizeinbase(m, 2);
+    mpz_set_ui(R->x, 0);
+    mpz_set_ui(R->y, 0);
+    if(mpz_cmp_ui(m, 0) == 0)
+	return;
         		
-	mpz_set(Q.x, P.x);
-	mpz_set(Q.y, P.y);
+    mpz_set(Q.x, P.x);
+    mpz_set(Q.y, P.y);
     
-	if(mpz_tstbit(m, 0) == 1){
-		mpz_set(R->x, P.x);
-		mpz_set(R->y, P.y);
-	}
+    if(mpz_tstbit(m, 0) == 1){
+	mpz_set(R->x, P.x);
+	mpz_set(R->y, P.y);
+    }
 
-	for(loop = 1; loop < no_of_bits; loop++) {
-		mpz_set_ui(T.x, 0);
-		mpz_set_ui(T.y, 0);
-		Point_Doubling(Q, &T);
-		mpz_set(Q.x, T.x);
-		mpz_set(Q.y, T.y);
-		mpz_set(T.x, R->x);
-		mpz_set(T.y, R->y);
-		if(mpz_tstbit(m, loop))
-			Point_Addition(T, Q, R);
-	}
+    for(loop = 1; loop < no_of_bits; loop++) {
+	mpz_set_ui(T.x, 0);
+	mpz_set_ui(T.y, 0);
+	Point_Doubling(Q, &T);
+	mpz_set(Q.x, T.x);
+	mpz_set(Q.y, T.y);
+	mpz_set(T.x, R->x);
+	mpz_set(T.y, R->y);
+	if(mpz_tstbit(m, loop))
+	    Point_Addition(T, Q, R);
+    }
     
     mpz_clear(P.x); mpz_clear(P.y);
-	mpz_clear(Q.x); mpz_clear(Q.y);
-	mpz_clear(T.x); mpz_clear(T.y);    
+    mpz_clear(Q.x); mpz_clear(Q.y);
+    mpz_clear(T.x); mpz_clear(T.y);    
 }
 
 void Point_Multiplication(struct Point P, struct Point *R, mpz_t m) {
     
-	struct Point Q, T;
-	mpz_init(Q.x); mpz_init(Q.y);
-	mpz_init(T.x); mpz_init(T.y);
-	long no_of_bits, loop;	
-	no_of_bits = mpz_sizeinbase(m, 2);
-	mpz_set_ui(R->x, 0);
-	mpz_set_ui(R->y, 0);
+    struct Point Q, T;
+    mpz_init(Q.x); mpz_init(Q.y);
+    mpz_init(T.x); mpz_init(T.y);
+    long no_of_bits, loop;	
+    no_of_bits = mpz_sizeinbase(m, 2);
+    mpz_set_ui(R->x, 0);
+    mpz_set_ui(R->y, 0);
     
-	if(mpz_cmp_ui(m, 0) == 0)
-		return;
+    if(mpz_cmp_ui(m, 0) == 0)
+	return;
 		
-	mpz_set(Q.x, P.x);
-	mpz_set(Q.y, P.y);
+    mpz_set(Q.x, P.x);
+    mpz_set(Q.y, P.y);
     
-	if(mpz_tstbit(m, 0) == 1){
-		mpz_set(R->x, P.x);
-		mpz_set(R->y, P.y);
+    if(mpz_tstbit(m, 0) == 1){
+	mpz_set(R->x, P.x);
+	mpz_set(R->y, P.y);
+    }
+
+    for(loop = 1; loop < no_of_bits; loop++) {
+	mpz_set_ui(T.x, 0);
+	mpz_set_ui(T.y, 0);
+	Point_Doubling(Q, &T);
+	mpz_set(Q.x, T.x);
+	mpz_set(Q.y, T.y);
+	mpz_set(T.x, R->x);
+	mpz_set(T.y, R->y);
+	if(mpz_tstbit(m, loop))
+	    Point_Addition(T, Q, R);
 	}
 
-	for(loop = 1; loop < no_of_bits; loop++) {
-		mpz_set_ui(T.x, 0);
-		mpz_set_ui(T.y, 0);
-		Point_Doubling(Q, &T);
-		mpz_set(Q.x, T.x);
-		mpz_set(Q.y, T.y);
-		mpz_set(T.x, R->x);
-		mpz_set(T.y, R->y);
-		if(mpz_tstbit(m, loop))
-			Point_Addition(T, Q, R);
-	}
-
-	mpz_clear(Q.x); mpz_clear(Q.y);
-	mpz_clear(T.x); mpz_clear(T.y);
+    mpz_clear(Q.x); mpz_clear(Q.y);
+    mpz_clear(T.x); mpz_clear(T.y);
 }
 
 void Point_Negation(struct Point *A) {
     
-	mpz_sub(A->y, EC.p, A->y);
+    mpz_sub(A->y, EC.p, A->y);
     
 }
 
@@ -272,64 +272,64 @@ const char * Point_To_Cpub(struct Point A) {
 
 const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
     
-	char bin_publickey[65];
-	char bin_sha256[32];
-	char bin_rmd160[20];
-	memset(hash160, 0, 42);
+    char bin_publickey[65];
+    char bin_sha256[32];
+    char bin_rmd160[20];
+    memset(hash160, 0, 42);
     memset(upub, 0, 130);
     memset(cpub, 0, 68);
-	if(compressed) {
-		if(mpz_tstbit(pubkey.y, 0) == 0) {
-			gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
-		}
-		else	{
-			gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
-		}
-		hexs2bin(cpub, bin_publickey);
-		sha256(bin_publickey, 33, bin_sha256);
+    if(compressed) {
+	if(mpz_tstbit(pubkey.y, 0) == 0) {
+	    gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
 	}
-	else	{
-		gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
-		hexs2bin(upub, bin_publickey);
-		sha256(bin_publickey, 65, bin_sha256);
+	else {
+	    gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
 	}
-	RMD160Data((const unsigned char*)bin_sha256, 32, bin_rmd160);
-	tohex_dst(bin_rmd160, 20, hash160);
+	hexs2bin(cpub, bin_publickey);
+	sha256(bin_publickey, 33, bin_sha256);
+    }
+    else {
+	gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
+	hexs2bin(upub, bin_publickey);
+	sha256(bin_publickey, 65, bin_sha256);
+    }
+    RMD160Data((const unsigned char*)bin_sha256, 32, bin_rmd160);
+    tohex_dst(bin_rmd160, 20, hash160);
     return hash160;
 }
 
 const char * Point_To_Address(struct Point pubkey, bool compressed) {
     
-	char bin_publickey[65];
-	char bin_sha256[32];
-	char bin_digest[60];
-	size_t pubaddress_size = 50;
-	memset(address, 0, 50);
-	memset(upub, 0, 130);
+    char bin_publickey[65];
+    char bin_sha256[32];
+    char bin_digest[60];
+    size_t pubaddress_size = 50;
+    memset(address, 0, 50);
+    memset(upub, 0, 130);
     memset(cpub, 0, 68);
-	if(compressed) {
-		if(mpz_tstbit(pubkey.y, 0) == 0) {
-			gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
-		}
-		else {
-			gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
-		}
-		hexs2bin(cpub, bin_publickey);
-		sha256(bin_publickey, 33, bin_sha256);
+    if(compressed) {
+	if(mpz_tstbit(pubkey.y, 0) == 0) {
+	    gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
 	}
 	else {
-		gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
-		hexs2bin(upub, bin_publickey);
-		sha256(bin_publickey, 65, bin_sha256);
+	    gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
 	}
-	RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
-	bin_digest[0] = 0;		
-	sha256(bin_digest, 21, bin_digest + 21);
-	sha256(bin_digest + 21, 32, bin_digest + 21);
+	hexs2bin(cpub, bin_publickey);
+	sha256(bin_publickey, 33, bin_sha256);
+    }
+    else {
+	gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
+	hexs2bin(upub, bin_publickey);
+	sha256(bin_publickey, 65, bin_sha256);
+    }
+    RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
+    bin_digest[0] = 0;		
+    sha256(bin_digest, 21, bin_digest + 21);
+    sha256(bin_digest + 21, 32, bin_digest + 21);
 	
-	if(!b58enc(address, &pubaddress_size, bin_digest, 25)){
-		fprintf(stderr,"error b58enc\n");
-	}
+    if(!b58enc(address, &pubaddress_size, bin_digest, 25)){
+	fprintf(stderr,"error b58enc\n");
+    }
     
     return address;
 }
@@ -348,12 +348,12 @@ int main(int argc, char *argv[])
     time_t rawtime;
     struct tm * timeinfo;
     
-	struct Point R;
-	mpz_init(R.x); mpz_init(R.y);        
+    struct Point R;
+    mpz_init(R.x); mpz_init(R.y);        
     mpz_set(R.x, Curve_G.x); mpz_set(R.y, Curve_G.y);
 	
-	mpz_t m;
-	mpz_init(m);
+    mpz_t m;
+    mpz_init(m);
     
     char pub[] = "0397c4e775d49f77c67f0ca9486d0694c8df1ab67e7d7fdb64d8413b79d8409f8c";
     
@@ -380,8 +380,8 @@ int main(int argc, char *argv[])
     
     mpz_clear(EC.a); mpz_clear(EC.b); mpz_clear(EC.p); mpz_clear(EC.n); // free memory for mpz variables
     mpz_clear(Curve_G.x); mpz_clear(Curve_G.y);
-	mpz_clear(R.x); mpz_clear(R.y);
+    mpz_clear(R.x); mpz_clear(R.y);
     mpz_clear(m);	
-    
-	return 0;
+    return 0;
+	
 }
