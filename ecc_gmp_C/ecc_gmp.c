@@ -18,8 +18,8 @@ struct Point {
 struct Elliptic_Curve EC; 
 struct Point Curve_G;
 
-void Point_Doubling(struct Point P, struct Point *R)
-{
+void Point_Doubling(struct Point P, struct Point *R) {
+	
     mpz_t slope, temp;
     mpz_init(temp);
     mpz_init(slope);
@@ -46,8 +46,8 @@ void Point_Doubling(struct Point P, struct Point *R)
     mpz_clear(slope);
 }
 
-void Point_Addition(struct Point P, struct Point Q, struct Point *R)
-{
+void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
+	
     if(mpz_cmp_ui(P.x, 0) == 0 && mpz_cmp_ui(P.y, 0) == 0) {
 	mpz_set(R->x, Q.x);
 	mpz_set(R->y, Q.y);
@@ -76,7 +76,7 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R)
 	return;
     }
 	
-    if(mpz_cmp(P.x, Q.x) == 0 && mpz_cmp(P.y, Q.y) == 0)	{
+    if(mpz_cmp(P.x, Q.x) == 0 && mpz_cmp(P.y, Q.y) == 0) {
 	Point_Doubling(P, R);		
 	mpz_clear(temp);
 	return;		
@@ -108,8 +108,8 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R)
     }
 }
 
-void Scalar_Multiplication(struct Point *R, mpz_t m)
-{
+void Scalar_Multiplication(struct Point *R, mpz_t m) {
+	
     struct Point P;
     mpz_init(P.x); mpz_init(P.y);
     mpz_set(P.x, Curve_G.x); mpz_set(P.y, Curve_G.y);
@@ -148,8 +148,8 @@ void Scalar_Multiplication(struct Point *R, mpz_t m)
     mpz_clear(T.x); mpz_clear(T.y);    
 }
 
-void Point_Multiplication(struct Point P, struct Point *R, mpz_t m)
-{
+void Point_Multiplication(struct Point P, struct Point *R, mpz_t m) {
+	
     struct Point Q, T;
     mpz_init(Q.x); mpz_init(Q.y);
     mpz_init(T.x); mpz_init(T.y);
@@ -186,7 +186,9 @@ void Point_Multiplication(struct Point P, struct Point *R, mpz_t m)
 }
 
 void Point_Negation(struct Point *A) {
+	
     mpz_sub(A->y, EC.p, A->y);
+	
 }
 
 void Point_Subtraction(struct Point A, struct Point *B, struct Point *R) {
@@ -226,27 +228,26 @@ bool Point_On_Curve(struct Point A) {
     mpz_mod(X, X, EC.p);
     mpz_pow_ui(Y, A.y, 2);
     mpz_mod(Y, Y, EC.p);
-    if (mpz_cmp(X, Y) == 0) {
-        return true;
-    }
-    else { return false;}
+    if (mpz_cmp(X, Y) == 0) { return true; }
+    else { return false; }
     
 }
 
-static char dst[132];
+static char upub[132];
+static char cpub[68];
 
 const char * Point_To_Upub(struct Point A) {
     
-    gmp_snprintf(dst, 131, "04%0.64Zx%0.64Zx", A.x, A.y);
-    return dst;
+    gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", A.x, A.y);
+    return upub;
     
 }
 
 const char * Point_To_Cpub(struct Point A) {
     
-    if(mpz_tstbit(A.y, 0) == 0) { gmp_snprintf(dst, 67, "02%0.64Zx", A.x); }
-    else { gmp_snprintf(dst, 67,"03%0.64Zx", A.x); }
-    return dst;
+    if(mpz_tstbit(A.y, 0) == 0) { gmp_snprintf(cpub, 68, "02%0.64Zx", A.x); }
+    else { gmp_snprintf(cpub, 68,"03%0.64Zx", A.x); }
+    return cpub;
     
 }
 
