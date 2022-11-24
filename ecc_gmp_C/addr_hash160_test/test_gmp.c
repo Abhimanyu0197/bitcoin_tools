@@ -91,7 +91,7 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
 	return;
     }
 	
-    if(mpz_cmp(S.x, Q.x) == 0 && mpz_cmp(S.y, Q.y) == 0)	{
+    if(mpz_cmp(S.x, Q.x) == 0 && mpz_cmp(S.y, Q.y) == 0) {
 	Point_Doubling(S, R);		
 	mpz_clear(temp);
 	return;		
@@ -142,7 +142,7 @@ void Scalar_Multiplication(struct Point *R, mpz_t m) {
     mpz_set(Q.x, P.x);
     mpz_set(Q.y, P.y);
     
-    if(mpz_tstbit(m, 0) == 1){
+    if(mpz_tstbit(m, 0) == 1) {
 	mpz_set(R->x, P.x);
 	mpz_set(R->y, P.y);
     }
@@ -180,7 +180,7 @@ void Point_Multiplication(struct Point P, struct Point *R, mpz_t m) {
     mpz_set(Q.x, P.x);
     mpz_set(Q.y, P.y);
     
-    if(mpz_tstbit(m, 0) == 1){
+    if(mpz_tstbit(m, 0) == 1) {
 	mpz_set(R->x, P.x);
 	mpz_set(R->y, P.y);
     }
@@ -321,7 +321,7 @@ const char * Point_To_Address(struct Point pubkey, bool compressed) {
     sha256(bin_digest, 21, bin_digest + 21);
     sha256(bin_digest + 21, 32, bin_digest + 21);
 	
-    if(!b58enc(address, &pubaddress_size, bin_digest, 25)){
+    if(!b58enc(address, &pubaddress_size, bin_digest, 25)) {
 	fprintf(stderr,"error b58enc\n");
     }
     
