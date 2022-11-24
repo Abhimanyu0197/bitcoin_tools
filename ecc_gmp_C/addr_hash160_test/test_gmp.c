@@ -220,7 +220,7 @@ void Point_Subtraction(struct Point A, struct Point *B, struct Point *R) {
         mpz_init(Q.x);
         mpz_init(Q.y);        
         mpz_set(Q.x, B->x);
-	    mpz_set(Q.y, B->y);
+	mpz_set(Q.y, B->y);
         Point_Addition(A, Q, R);
         mpz_clear(Q.x); mpz_clear(Q.y);
         return;      
