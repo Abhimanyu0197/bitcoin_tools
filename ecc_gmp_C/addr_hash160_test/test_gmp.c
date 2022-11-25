@@ -402,11 +402,11 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < 10; i++) {
         gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
-        gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed address
-        gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed address
-        gmp_printf("Address_P2SH: %s\n", Point_To_P2SH_Address(R)); // P2SH address
-        gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false));
-        gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true));
+        gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed Address
+        gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed Address
+        gmp_printf("Address_P2SH: %s\n", Point_To_P2SH_Address(R)); // P2SH Address
+        gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false)); //Hash160 Uncompressed
+        gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true)); // Hash160 Compressed
         Point_Addition(R, Curve_G, &R);
         //mpz_set(Q.x, R.x); mpz_set(Q.y, R.y);
         //if (strcmp(Point_To_Cpub(Q), pub) == 0) { printf("Point %s found\n", Point_To_Cpub(R)); }
