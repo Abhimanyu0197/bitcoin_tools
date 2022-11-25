@@ -295,7 +295,7 @@ const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
     return hash160;
 }
 
-const char * Point_To_Address(struct Point pubkey, bool compressed) {
+const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
     
     char bin_publickey[65];
     char bin_sha256[32];
@@ -358,8 +358,8 @@ int main(int argc, char *argv[])
   
     for (int i = 0; i < 10; i++) {
         gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
-        gmp_printf("Address_U: %s\n", Point_To_Address(R, false));
-        gmp_printf("Address_C: %s\n", Point_To_Address(R, true));
+        gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // Uncompressed
+        gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // Compressed
         gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false));
         gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true));
         Point_Addition(R, Curve_G, &R);
