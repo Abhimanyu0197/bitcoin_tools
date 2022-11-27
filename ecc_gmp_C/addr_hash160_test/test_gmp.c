@@ -407,7 +407,6 @@ const char * Point_To_Bech32_P2WSH_Address(struct Point pubkey) {
 
     hexs2bin(cpub, bin_publickey);
     sha256(bin_publickey, 33, bin_sha256);
-    bin_sha256[32] = 0x00;
     segwit_addr_encode(bech32_output_p2wsh, "bc", 0, bin_sha256, 32);
     return bech32_output_p2wsh;
     
