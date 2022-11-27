@@ -15,7 +15,7 @@ struct Elliptic_Curve {
     
     mpz_t a;
     mpz_t b;
-	mpz_t p;
+    mpz_t p;
     mpz_t n;
     
 };
@@ -341,9 +341,8 @@ const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
 const char * Point_To_P2SH_Address(struct Point pubkey) {
     
     char bin_publickey[65];
-	char bin_sha256[32];
-    char sha256_s[32];
-	char bin_digest[60];
+    char bin_sha256[32];
+    char bin_digest[60];
     size_t pubaddress_size = 50;
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
@@ -380,10 +379,9 @@ const char * Point_To_P2SH_Address(struct Point pubkey) {
 const char * Point_To_Bech32_P2WPKH_Address(struct Point pubkey) {
     
     char bin_publickey[65];
-	char bin_sha256[32];
-    char sha256_s[32];
-	char bin_digest[60];
-    size_t pubaddress_size = 50;
+    char bin_sha256[32];
+    char bin_digest[60];
+
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
     }
