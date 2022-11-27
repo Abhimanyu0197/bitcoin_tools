@@ -15,7 +15,7 @@ struct Elliptic_Curve {
     
     mpz_t a;
     mpz_t b;
-    mpz_t p;
+	mpz_t p;
     mpz_t n;
     
 };
@@ -323,15 +323,10 @@ const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
 		sha256(bin_publickey, 65, bin_sha256);
 	}
     
-	//RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
     RMD160Data(bin_sha256, 32, bin_digest + 1);
 	bin_digest[0] = 0;		
 	sha256(bin_digest, 21, bin_digest + 21);
 	sha256(bin_digest + 21, 32, bin_digest + 21);
-	
-	//if(!b58enc(address, &pubaddress_size, bin_digest, 25)){
-		//fprintf(stderr,"error b58enc\n");
-	//}
     
     b58enc(address, &pubaddress_size, bin_digest, 25);
     return address;
@@ -341,8 +336,8 @@ const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
 const char * Point_To_P2SH_Address(struct Point pubkey) {
     
     char bin_publickey[65];
-    char bin_sha256[32];
-    char bin_digest[60];
+	char bin_sha256[32];
+	char bin_digest[60];
     size_t pubaddress_size = 50;
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
@@ -359,7 +354,6 @@ const char * Point_To_P2SH_Address(struct Point pubkey) {
     
     sha256(bin_digest, 22, bin_sha256);
     
-    //RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
     RMD160Data(bin_sha256, 32, bin_digest + 1);
 	bin_digest[0] = 0x05;
     
@@ -379,9 +373,9 @@ const char * Point_To_P2SH_Address(struct Point pubkey) {
 const char * Point_To_Bech32_P2WPKH_Address(struct Point pubkey) {
     
     char bin_publickey[65];
-    char bin_sha256[32];
-    char bin_digest[60];
-
+	char bin_sha256[32];
+	char bin_digest[60];
+    
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
     }
