@@ -5,6 +5,7 @@
 #include <time.h>
 #include <gmp.h>
 
+#include "bech32/bech32.h"
 #include "base58/libbase58.h"
 #include "rmd160/rmd160.h"
 #include "sha256/sha256.h"
@@ -254,6 +255,7 @@ static char upub[132];
 static char cpub[68];
 static char address[50];
 static char hash160[42];
+static char bech32_output[128];
 
 const char * Point_To_Upub(struct Point A) {
     
@@ -321,15 +323,17 @@ const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
 		sha256(bin_publickey, 65, bin_sha256);
 	}
     
-	RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
+	//RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
+    RMD160Data(bin_sha256, 32, bin_digest + 1);
 	bin_digest[0] = 0;		
 	sha256(bin_digest, 21, bin_digest + 21);
 	sha256(bin_digest + 21, 32, bin_digest + 21);
 	
-	if(!b58enc(address, &pubaddress_size, bin_digest, 25)){
-		fprintf(stderr,"error b58enc\n");
-	}
+	//if(!b58enc(address, &pubaddress_size, bin_digest, 25)){
+		//fprintf(stderr,"error b58enc\n");
+	//}
     
+    b58enc(address, &pubaddress_size, bin_digest, 25);
     return address;
     
 }
@@ -356,7 +360,8 @@ const char * Point_To_P2SH_Address(struct Point pubkey) {
     
     sha256(bin_digest, 22, bin_sha256);
     
-    RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
+    //RMD160Data((const unsigned char*)bin_sha256, 32, bin_digest + 1);
+    RMD160Data(bin_sha256, 32, bin_digest + 1);
 	bin_digest[0] = 0x05;
     
     sha256(bin_digest, 21, bin_sha256);
@@ -369,6 +374,28 @@ const char * Point_To_P2SH_Address(struct Point pubkey) {
     
     b58enc(address, &pubaddress_size, bin_digest, 25);
     return address;
+    
+}
+
+const char * Point_To_Bech32_P2WPKH_Address(struct Point pubkey) {
+    
+    char bin_publickey[65];
+	char bin_sha256[32];
+    char sha256_s[32];
+	char bin_digest[60];
+    size_t pubaddress_size = 50;
+    if(mpz_tstbit(pubkey.y, 0) == 0) {
+        gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
+    }
+    else {
+        gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
+    }
+
+    hexs2bin(cpub, bin_publickey);    
+    sha256(bin_publickey, 33, bin_sha256);
+    RMD160Data(bin_sha256, 32, bin_digest);
+    segwit_addr_encode(bech32_output, "bc", 0, bin_digest, 20);
+    return bech32_output;
     
 }
 
@@ -405,6 +432,7 @@ int main(int argc, char *argv[])
         gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed Address
         gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed Address
         gmp_printf("Address_P2SH: %s\n", Point_To_P2SH_Address(R)); // P2SH Address
+        gmp_printf("Address_Bech32: %s\n", Point_To_Bech32_P2WPKH_Address(R)); // Bech32 P2WPKH Address
         gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false)); // Hash160 Uncompressed
         gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true)); // Hash160 Compressed
         Point_Addition(R, Curve_G, &R);
