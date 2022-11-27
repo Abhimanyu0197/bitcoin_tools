@@ -256,6 +256,7 @@ static char cpub[68];
 static char address[50];
 static char hash160[42];
 static char bech32_output[128];
+static char bech32_output_p2wsh[128];
 
 const char * Point_To_Upub(struct Point A) {
     
@@ -391,6 +392,27 @@ const char * Point_To_Bech32_P2WPKH_Address(struct Point pubkey) {
     
 }
 
+const char * Point_To_Bech32_P2WSH_Address(struct Point pubkey) {
+    
+    char bin_publickey[65];
+	char bin_sha256[34];
+	char bin_digest[60];
+    
+    if(mpz_tstbit(pubkey.y, 0) == 0) {
+        gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
+    }
+    else {
+        gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
+    }
+
+    hexs2bin(cpub, bin_publickey);
+    sha256(bin_publickey, 33, bin_sha256);
+    bin_sha256[32] = 0x00;
+    segwit_addr_encode(bech32_output_p2wsh, "bc", 0, bin_sha256, 32);
+    return bech32_output_p2wsh;
+    
+}
+
 int main(int argc, char *argv[])
 {
     mpz_init(EC.a); mpz_init(EC.b); mpz_init(EC.p); mpz_init(EC.n);
@@ -419,12 +441,13 @@ int main(int argc, char *argv[])
     timeinfo = localtime(&rawtime);
     printf("Time: %s\n", asctime(timeinfo));
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 3; i++) {
         gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
         gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed Address
         gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed Address
         gmp_printf("Address_P2SH: %s\n", Point_To_P2SH_Address(R)); // P2SH Address
-        gmp_printf("Address_Bech32: %s\n", Point_To_Bech32_P2WPKH_Address(R)); // Bech32 P2WPKH Address
+        gmp_printf("Address_Bech32_P2WPKH: %s\n", Point_To_Bech32_P2WPKH_Address(R)); // Bech32 P2WPKH Address
+        gmp_printf("Address_Bech32_P2WSH: %s\n", Point_To_Bech32_P2WSH_Address(R)); // Bech32 P2WSH Address
         gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false)); // Hash160 Uncompressed
         gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true)); // Hash160 Compressed
         Point_Addition(R, Curve_G, &R);
