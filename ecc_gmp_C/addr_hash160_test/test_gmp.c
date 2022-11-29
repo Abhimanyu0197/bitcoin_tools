@@ -5,10 +5,11 @@
 #include <time.h>
 #include <gmp.h>
 
-#include "bech32/bech32.h"
 #include "base58/libbase58.h"
 #include "rmd160/rmd160.h"
 #include "sha256/sha256.h"
+//#include "bech32/bech32.h"
+#include "bech32m/segwit_addr.h"
 #include "util.h"
 
 struct Elliptic_Curve {
@@ -257,6 +258,7 @@ static char address[50];
 static char hash160[42];
 static char bech32_output[128];
 static char bech32_output_p2wsh[128];
+static char wif[54];
 
 const char * Point_To_Upub(struct Point A) {
     
@@ -407,10 +409,56 @@ const char * Point_To_Bech32_P2WSH_Address(struct Point pubkey) {
 
     hexs2bin(cpub, bin_publickey);
     sha256(bin_publickey, 33, bin_sha256);
-    bin_sha256[32] = 0x00;
     segwit_addr_encode(bech32_output_p2wsh, "bc", 0, bin_sha256, 32);
     return bech32_output_p2wsh;
     
+}
+
+const char * Point_To_Bech32_P2TR_Address() { // to be continued not complete
+    
+    char bin_publickey[65];
+	char bin_sha256[34];
+	char bin_digest[60];
+    
+    char pub[] = "da4710964f7852695de2da025290e24af6d8c281de5a0b902b7135fd9fd74d21";
+    gmp_snprintf(cpub, 68, "%s", pub);
+    hexs2bin(cpub, bin_publickey);
+    segwit_addr_encode(bech32_output_p2wsh, "bc", 1, bin_publickey, 32);
+    return bech32_output_p2wsh;
+    
+}
+
+const char * Private_Key_To_WIF(mpz_t pk, bool compressed) {
+    
+    size_t wif_size = 54;
+    char privatekey[66];
+    char bin_privatekey[76];
+    char bin_sha256[34];
+    bin_privatekey[0] = 0x80;
+    gmp_snprintf(privatekey, 65, "%0.64Zx", pk);
+    hexs2bin(privatekey, bin_privatekey+1);
+    if (compressed) {
+        bin_privatekey[33] = 0x01;
+        sha256(bin_privatekey, 34, bin_sha256);
+        sha256(bin_sha256, 32, bin_sha256);    
+        bin_privatekey[34] = bin_sha256[0];
+        bin_privatekey[35] = bin_sha256[1];
+        bin_privatekey[36] = bin_sha256[2];
+        bin_privatekey[37] = bin_sha256[3];
+        b58enc(wif, &wif_size, bin_privatekey, 38);
+        return wif;
+    }
+    else {
+        sha256(bin_privatekey, 33, bin_sha256);
+        sha256(bin_sha256, 32, bin_sha256);    
+        bin_privatekey[33] = bin_sha256[0];
+        bin_privatekey[34] = bin_sha256[1];
+        bin_privatekey[35] = bin_sha256[2];
+        bin_privatekey[36] = bin_sha256[3];
+        b58enc(wif, &wif_size, bin_privatekey, 37);
+        return wif;
+    }
+
 }
 
 int main(int argc, char *argv[])
@@ -440,8 +488,11 @@ int main(int argc, char *argv[])
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     printf("Time: %s\n", asctime(timeinfo));
-
-    for (int i = 0; i < 3; i++) {
+    mpz_set_str(m, "0x3", 0);
+    gmp_printf("WIF_U: %s\n", Private_Key_To_WIF(m, false));
+    gmp_printf("WIF_C: %s\n", Private_Key_To_WIF(m, true));
+    gmp_printf("Address_Bech32m_P2TR: %s\n", Point_To_Bech32_P2TR_Address()); // Bech32 P2TR Address
+    for (int i = 0; i < 2; i++) {
         gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
         gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed Address
         gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed Address
