@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <time.h>
+//#include <time.h>
+#include <sys/time.h>
 #include <gmp.h>
 
 #include "base58/libbase58.h"
@@ -222,7 +223,7 @@ void Point_Subtraction(struct Point A, struct Point *B, struct Point *R) {
         mpz_init(Q.x);
         mpz_init(Q.y);        
         mpz_set(Q.x, B->x);
-	    mpz_set(Q.y, B->y);
+        mpz_set(Q.y, B->y);
         Point_Addition(A, Q, R);
         mpz_clear(Q.x); mpz_clear(Q.y);
         return;      
@@ -247,8 +248,15 @@ bool Point_On_Curve(struct Point A) {
     mpz_mod(X, X, EC.p);
     mpz_pow_ui(Y, A.y, 2);
     mpz_mod(Y, Y, EC.p);
-    if (mpz_cmp(X, Y) == 0) { return true; }
-    else { return false; }
+    if (mpz_cmp(X, Y) == 0) {
+        mpz_clear(X);
+        mpz_clear(Y);
+        return true; 
+    } else {
+        mpz_clear(X);
+        mpz_clear(Y);
+        return false; 
+    }
     
 }
 
@@ -257,8 +265,10 @@ static char cpub[68];
 static char address[50];
 static char hash160[42];
 static char bech32_output[128];
-static char bech32_output_p2wsh[128];
 static char wif[54];
+static char bin_publickey[65];
+static char bin_sha256[32];
+static char bin_digest[60];
 
 const char * Point_To_Upub(struct Point A) {
     
@@ -270,23 +280,21 @@ const char * Point_To_Upub(struct Point A) {
 const char * Point_To_Cpub(struct Point A) {
     
     if(mpz_tstbit(A.y, 0) == 0) { gmp_snprintf(cpub, 67, "02%0.64Zx", A.x); }
-    else { gmp_snprintf(cpub, 68,"03%0.64Zx", A.x); }
+    else { gmp_snprintf(cpub, 67,"03%0.64Zx", A.x); }
     return cpub;
     
 }
 
 const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
     
-	char bin_publickey[65];
-	char bin_sha256[32];
 	char bin_rmd160[20];
     
 	if(compressed) {
 		if(mpz_tstbit(pubkey.y, 0) == 0) {
-			gmp_snprintf (cpub, 68, "02%0.64Zx", pubkey.x);
+			gmp_snprintf (cpub, 67, "02%0.64Zx", pubkey.x);
 		}
 		else	{
-			gmp_snprintf(cpub, 68, "03%0.64Zx", pubkey.x);
+			gmp_snprintf(cpub, 67, "03%0.64Zx", pubkey.x);
 		}
 		hexs2bin(cpub, bin_publickey);
 		sha256(bin_publickey, 33, bin_sha256);
@@ -305,9 +313,6 @@ const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
 
 const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
     
-	char bin_publickey[65];
-	char bin_sha256[32];
-	char bin_digest[60];
 	size_t pubaddress_size = 50;
     
 	if(compressed) {
@@ -338,9 +343,6 @@ const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
 
 const char * Point_To_P2SH_Address(struct Point pubkey) {
     
-    char bin_publickey[65];
-	char bin_sha256[32];
-	char bin_digest[60];
     size_t pubaddress_size = 50;
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
@@ -374,11 +376,7 @@ const char * Point_To_P2SH_Address(struct Point pubkey) {
 }
 
 const char * Point_To_Bech32_P2WPKH_Address(struct Point pubkey) {
-    
-    char bin_publickey[65];
-	char bin_sha256[32];
-	char bin_digest[60];
-    
+        
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
     }
@@ -396,10 +394,6 @@ const char * Point_To_Bech32_P2WPKH_Address(struct Point pubkey) {
 
 const char * Point_To_Bech32_P2WSH_Address(struct Point pubkey) {
     
-    char bin_publickey[65];
-	char bin_sha256[34];
-	char bin_digest[60];
-    
     if(mpz_tstbit(pubkey.y, 0) == 0) {
         gmp_snprintf(cpub, 68, "02%0.64Zx", pubkey.x);
     }
@@ -409,22 +403,18 @@ const char * Point_To_Bech32_P2WSH_Address(struct Point pubkey) {
 
     hexs2bin(cpub, bin_publickey);
     sha256(bin_publickey, 33, bin_sha256);
-    segwit_addr_encode(bech32_output_p2wsh, "bc", 0, bin_sha256, 32);
-    return bech32_output_p2wsh;
+    segwit_addr_encode(bech32_output, "bc", 0, bin_sha256, 32);
+    return bech32_output;
     
 }
 
-const char * Point_To_Bech32_P2TR_Address() { // to be continued not complete
-    
-    char bin_publickey[65];
-	char bin_sha256[34];
-	char bin_digest[60];
+const char * Point_To_Bech32m_P2TR_Address() { // to be continued not complete
     
     char pub[] = "da4710964f7852695de2da025290e24af6d8c281de5a0b902b7135fd9fd74d21";
     gmp_snprintf(cpub, 68, "%s", pub);
     hexs2bin(cpub, bin_publickey);
-    segwit_addr_encode(bech32_output_p2wsh, "bc", 1, bin_publickey, 32);
-    return bech32_output_p2wsh;
+    segwit_addr_encode(bech32_output, "bc", 1, bin_publickey, 32);
+    return bech32_output;
     
 }
 
@@ -433,10 +423,10 @@ const char * Private_Key_To_WIF(mpz_t pk, bool compressed) {
     size_t wif_size = 54;
     char privatekey[66];
     char bin_privatekey[76];
-    char bin_sha256[34];
     bin_privatekey[0] = 0x80;
     gmp_snprintf(privatekey, 65, "%0.64Zx", pk);
     hexs2bin(privatekey, bin_privatekey+1);
+    
     if (compressed) {
         bin_privatekey[33] = 0x01;
         sha256(bin_privatekey, 34, bin_sha256);
@@ -472,9 +462,6 @@ int main(int argc, char *argv[])
     mpz_set_str(Curve_G.x, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", 0);
     mpz_set_str(Curve_G.y, "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", 0);
     
-    time_t rawtime;
-    struct tm * timeinfo;
-    
 	struct Point R;
 	mpz_init(R.x); mpz_init(R.y);        
     mpz_set(R.x, Curve_G.x); mpz_set(R.y, Curve_G.y);
@@ -483,16 +470,15 @@ int main(int argc, char *argv[])
 	mpz_init(m);
     
     char pub[] = "0397c4e775d49f77c67f0ca9486d0694c8df1ab67e7d7fdb64d8413b79d8409f8c";
-    
     puts("");
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    printf("Time: %s\n", asctime(timeinfo));
-    mpz_set_str(m, "0x3", 0);
-    gmp_printf("WIF_U: %s\n", Private_Key_To_WIF(m, false));
-    gmp_printf("WIF_C: %s\n", Private_Key_To_WIF(m, true));
-    gmp_printf("Address_Bech32m_P2TR: %s\n", Point_To_Bech32_P2TR_Address()); // Bech32 P2TR Address
-    for (int i = 0; i < 2; i++) {
+    struct timeval  tv1, tv2;
+    gettimeofday(&tv1, NULL);
+    
+    mpz_set_str(m, "0x1", 0);
+    gmp_printf("WIF_U: %s\n", Private_Key_To_WIF(m, false)); // WIF Uncompressed
+    gmp_printf("WIF_C: %s\n", Private_Key_To_WIF(m, true)); // WIF Compressed
+    gmp_printf("Address_Bech32m_P2TR: %s\n", Point_To_Bech32m_P2TR_Address()); // Bech32 P2TR Address
+    for (int i = 0; i < 100; i++) {
         gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
         gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed Address
         gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed Address
@@ -502,14 +488,12 @@ int main(int argc, char *argv[])
         gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false)); // Hash160 Uncompressed
         gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true)); // Hash160 Compressed
         Point_Addition(R, Curve_G, &R);
-        //mpz_set(Q.x, R.x); mpz_set(Q.y, R.y);
         //if (strcmp(Point_To_Cpub(Q), pub) == 0) { printf("Point %s found\n", Point_To_Cpub(R)); }
     }
 
     puts("");
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    printf("Time: %s\n", asctime(timeinfo));
+    gettimeofday(&tv2, NULL);
+    printf ("Total time = %f seconds\n", (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec));
     
     mpz_clear(EC.a); mpz_clear(EC.b); mpz_clear(EC.p); mpz_clear(EC.n); // free memory for mpz variables
     mpz_clear(Curve_G.x); mpz_clear(Curve_G.y);
