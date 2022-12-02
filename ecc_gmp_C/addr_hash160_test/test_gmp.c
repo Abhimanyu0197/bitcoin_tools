@@ -241,7 +241,7 @@ void Point_Division(struct Point D, struct Point *S, mpz_t k) {
 
 bool Point_On_Curve(struct Point A) {
     
-    mpz_t X,Y;
+    mpz_t X, Y;
     mpz_init(X); mpz_init(Y);
     mpz_pow_ui(X, A.x, 3);
     mpz_add(X, X, EC.b);
