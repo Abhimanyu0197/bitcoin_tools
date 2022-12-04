@@ -212,7 +212,7 @@ void Point_Negation(struct Point *A) {
 
 void Point_Subtraction(struct Point A, struct Point *B, struct Point *R) {
     
-    if (mpz_cmp(A.x, B->x) == 0 && mpz_cmp(A.x, B->x) == 0) {
+    if (mpz_cmp(A.x, B->x) == 0 && mpz_cmp(A.y, B->y) == 0) {
         mpz_set_ui(R->x, 0);
         mpz_set_ui(R->y, 0);
         return;
