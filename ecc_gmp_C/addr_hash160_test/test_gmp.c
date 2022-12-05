@@ -275,11 +275,11 @@ const char * Point_To_Legacy_Address(struct Point pubkey, bool compressed) {
         }
         hexs2bin(cpub, bin_publickey);
         sha256(bin_publickey, 33, bin_sha256);
-	} else {
+    } else {
         gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
         hexs2bin(upub, bin_publickey);
         sha256(bin_publickey, 65, bin_sha256);
-	}
+    }
     RMD160Data(bin_sha256, 32, bin_digest + 1);
     bin_digest[0] = 0;
     sha256(bin_digest, 21, bin_digest + 21);
