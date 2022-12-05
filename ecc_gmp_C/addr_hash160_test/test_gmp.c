@@ -31,7 +31,6 @@ struct Point Curve_G;
 void Point_Doubling(struct Point P, struct Point *R) {
     mpz_t slope, temp;
     mpz_init(temp); mpz_init(slope);
-    
     mpz_mul_ui(temp, P.y, 2);
     mpz_invert(temp, temp, EC.p);
     mpz_mul(slope, P.x, P.x);
@@ -39,17 +38,14 @@ void Point_Doubling(struct Point P, struct Point *R) {
     mpz_add(slope, slope, EC.a);
     mpz_mul(slope, slope, temp);
     mpz_mod(slope, slope, EC.p);
-    
     mpz_mul(R->x, slope, slope);
     mpz_sub(R->x, R->x, P.x);
     mpz_sub(R->x, R->x, P.x);
     mpz_mod(R->x, R->x, EC.p);
-    
     mpz_sub(temp, P.x, R->x);
     mpz_mul(R->y, slope, temp);
     mpz_sub(R->y, R->y, P.y);
     mpz_mod(R->y, R->y, EC.p);
-    
     mpz_clear(temp); mpz_clear(slope);
 }
 
@@ -57,7 +53,6 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
     struct Point S;
     mpz_init(S.x); mpz_init(S.y);
     mpz_set(S.x, P.x); mpz_set(S.y, P.y);
-    
     if(mpz_cmp_ui(S.x, 0) == 0 && mpz_cmp_ui(S.y, 0) == 0) {
         mpz_set(R->x, Q.x);
         mpz_set(R->y, Q.y);
@@ -68,16 +63,13 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
         mpz_set(R->y, S.y);
         return;
     }
-    
     mpz_t temp; mpz_init(temp);
-    
     if(mpz_cmp_ui(Q.y, 0) != 0) {
         mpz_sub(temp, EC.p, Q.y);
         mpz_mod(temp, temp, EC.p);
     } else {
         mpz_set_ui(temp, 0);
     }
-    
     if(mpz_cmp(S.y, temp) == 0 && mpz_cmp(S.x, Q.x) == 0) {
         mpz_set_ui(R->x, 0);
         mpz_set_ui(R->y, 0);
@@ -91,25 +83,20 @@ void Point_Addition(struct Point P, struct Point Q, struct Point *R) {
     } else {
         mpz_t slope;
         mpz_init_set_ui(slope, 0);
-        
         mpz_sub(temp, S.x, Q.x);
         mpz_mod(temp, temp, EC.p);
-        
         mpz_invert(temp, temp, EC.p);
         mpz_sub(slope, S.y, Q.y);
         mpz_mul(slope, slope, temp);
         mpz_mod(slope, slope, EC.p);
-        
         mpz_mul(R->x, slope, slope);
         mpz_sub(R->x, R->x, S.x);
         mpz_sub(R->x, R->x, Q.x);
         mpz_mod(R->x, R->x, EC.p);
-        
         mpz_sub(temp, S.x, R->x);
         mpz_mul(R->y, slope, temp);
         mpz_sub(R->y, R->y, S.y);
         mpz_mod(R->y, R->y, EC.p);
-        
         mpz_clear(temp);
         mpz_clear(slope);
         mpz_clear(S.x);
@@ -128,14 +115,11 @@ void Scalar_Multiplication(struct Point *R, mpz_t m) {
     no_of_bits = mpz_sizeinbase(m, 2);
     mpz_set_ui(R->x, 0); mpz_set_ui(R->y, 0);
     if(mpz_cmp_ui(m, 0) == 0) return;
-    
     mpz_set(Q.x, P.x); mpz_set(Q.y, P.y);
-    
     if(mpz_tstbit(m, 0) == 1) {
         mpz_set(R->x, P.x);
         mpz_set(R->y, P.y);
     }
-    
     for(loop = 1; loop < no_of_bits; loop++) {
         mpz_set_ui(T.x, 0); mpz_set_ui(T.y, 0);
         Point_Doubling(Q, &T);
@@ -143,7 +127,6 @@ void Scalar_Multiplication(struct Point *R, mpz_t m) {
         mpz_set(T.x, R->x); mpz_set(T.y, R->y);
         if(mpz_tstbit(m, loop)) Point_Addition(T, Q, R);
 	}
-    
     mpz_clear(P.x); mpz_clear(P.y);
     mpz_clear(Q.x); mpz_clear(Q.y);
     mpz_clear(T.x); mpz_clear(T.y);    
@@ -156,14 +139,11 @@ void Point_Multiplication(struct Point P, struct Point *R, mpz_t m) {
     no_of_bits = mpz_sizeinbase(m, 2);
     mpz_set_ui(R->x, 0); mpz_set_ui(R->y, 0);
     if(mpz_cmp_ui(m, 0) == 0) return;
-    
     mpz_set(Q.x, P.x); mpz_set(Q.y, P.y);
-    
     if(mpz_tstbit(m, 0) == 1) {
         mpz_set(R->x, P.x);
         mpz_set(R->y, P.y);
     }
-    
     for(loop = 1; loop < no_of_bits; loop++) {
         mpz_set_ui(T.x, 0); mpz_set_ui(T.y, 0);
         Point_Doubling(Q, &T);
@@ -171,7 +151,6 @@ void Point_Multiplication(struct Point P, struct Point *R, mpz_t m) {
         mpz_set(T.x, R->x); mpz_set(T.y, R->y);
 		if(mpz_tstbit(m, loop)) Point_Addition(T, Q, R);
     }
-    
     mpz_clear(Q.x); mpz_clear(Q.y);
     mpz_clear(T.x); mpz_clear(T.y);
 }
