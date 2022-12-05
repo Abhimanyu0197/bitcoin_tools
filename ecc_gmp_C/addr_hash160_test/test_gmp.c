@@ -449,6 +449,7 @@ const char * Taproot_Tweak_PrivKey(mpz_t k) {
     mpz_mod(seckey, seckey, EC.n);
     char * number_str = mpz_get_str(NULL, 16, seckey);
     mpz_clear(t); mpz_clear(s); mpz_clear(seckey);
+    mpz_clear(Q.x); mpz_clear(Q.y);
     return number_str;
     
 }
