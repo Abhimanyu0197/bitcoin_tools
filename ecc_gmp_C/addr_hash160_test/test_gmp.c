@@ -449,6 +449,7 @@ const char * Taproot_Tweak_PrivKey(mpz_t k) {
     mpz_mod(seckey, seckey, EC.n);
     char * number_str = mpz_get_str(NULL, 16, seckey);
     mpz_clear(t); mpz_clear(s); mpz_clear(seckey);
+    mpz_clear(Q.x); mpz_clear(Q.y);
     return number_str;
     
 }
@@ -510,12 +511,12 @@ int main(int argc, char *argv[])
     mpz_set_str(Curve_G.x, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", 0);
     mpz_set_str(Curve_G.y, "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", 0);
     
-	struct Point R;
-	mpz_init(R.x); mpz_init(R.y);        
+    struct Point R;
+    mpz_init(R.x); mpz_init(R.y);
     mpz_set(R.x, Curve_G.x); mpz_set(R.y, Curve_G.y);
-	
-	mpz_t m;
-	mpz_init(m);
+    
+    mpz_t m;
+    mpz_init(m);
     
     //char pub[] = "0397c4e775d49f77c67f0ca9486d0694c8df1ab67e7d7fdb64d8413b79d8409f8c";
     puts("");
@@ -546,8 +547,7 @@ int main(int argc, char *argv[])
     
     mpz_clear(EC.a); mpz_clear(EC.b); mpz_clear(EC.p); mpz_clear(EC.n); // free memory for mpz variables
     mpz_clear(Curve_G.x); mpz_clear(Curve_G.y);
-	mpz_clear(R.x); mpz_clear(R.y);
-    mpz_clear(m);	
-    
-	return 0;
+    mpz_clear(R.x); mpz_clear(R.y);
+    mpz_clear(m);
+    return 0;
 }
