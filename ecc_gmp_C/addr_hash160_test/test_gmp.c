@@ -254,8 +254,7 @@ const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
 		}
         hexs2bin(cpub, bin_publickey);
         sha256(bin_publickey, 33, bin_sha256);
-	}
-    else {
+	} else {
         gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
         hexs2bin(upub, bin_publickey);
         sha256(bin_publickey, 65, bin_sha256);
