@@ -126,7 +126,7 @@ void Scalar_Multiplication(struct Point *R, mpz_t m) {
         mpz_set(Q.x, T.x); mpz_set(Q.y, T.y);
         mpz_set(T.x, R->x); mpz_set(T.y, R->y);
         if(mpz_tstbit(m, loop)) Point_Addition(T, Q, R);
-	}
+    }
     mpz_clear(P.x); mpz_clear(P.y);
     mpz_clear(Q.x); mpz_clear(Q.y);
     mpz_clear(T.x); mpz_clear(T.y);    
@@ -230,14 +230,14 @@ const char * Point_To_Hash160(struct Point pubkey, bool compressed) {
             gmp_snprintf (cpub, 67, "02%0.64Zx", pubkey.x);
         } else {
             gmp_snprintf(cpub, 67, "03%0.64Zx", pubkey.x);
-		}
+        }
         hexs2bin(cpub, bin_publickey);
         sha256(bin_publickey, 33, bin_sha256);
     } else {
         gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", pubkey.x, pubkey.y);
         hexs2bin(upub, bin_publickey);
         sha256(bin_publickey, 65, bin_sha256);
-	}
+    }
     RMD160Data((const unsigned char*)bin_sha256, 32, bin_rmd160);
     tohex_dst(bin_rmd160, 20, hash160);
     return hash160;    
