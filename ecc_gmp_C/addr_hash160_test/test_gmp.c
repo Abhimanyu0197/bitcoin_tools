@@ -468,6 +468,7 @@ int main(int argc, char *argv[])
     mpz_clear(EC.a); mpz_clear(EC.b); mpz_clear(EC.p); mpz_clear(EC.n); // free memory for mpz variables
     mpz_clear(Curve_G.x); mpz_clear(Curve_G.y);
     mpz_clear(R.x); mpz_clear(R.y);
+    mpz_clear(stride_Point.x); mpz_clear(stride_Point.y);
     mpz_clear(m); mpz_clear(stride);
     return 0;
 }
