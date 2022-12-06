@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
     mpz_set_str(m, "0x1", 0);
     Scalar_Multiplication(&R, m);
     mpz_set_str(stride, "0x1", 0);
-    Scalar_Multiplication(&stride_Point, m);
+    Scalar_Multiplication(&stride_Point, stride);
     
     //char pub[] = "0397c4e775d49f77c67f0ca9486d0694c8df1ab67e7d7fdb64d8413b79d8409f8c";
     puts("");
