@@ -335,7 +335,7 @@ const char * Tagged_Hash(mpz_t x) {
     return tohex(bin_sha256, 32);
 }
 
-const char * Taproot_Tweak_PrivKey(mpz_t k) {
+const char * Taproot_Tweaked_PrivKey(mpz_t k) {
     mpz_t seckey, t, s;
     mpz_init(seckey); mpz_init(t); mpz_init(s);
     struct Point Q;
@@ -358,12 +358,27 @@ const char * Taproot_Tweak_PrivKey(mpz_t k) {
     return number_str;
 }
 
-void Public_Key_X_Coordinate_To_Taproot_Tweaked_Pubkey() {// to be continued not complete
+const char * Point_To_Taproot_Tweaked_Pubkey(struct Point pubkey) {
+    mpz_t t; mpz_init(t);
+    struct Point Q, SM;
+    mpz_init(Q.x); mpz_init(Q.y);
+    mpz_init(SM.x); mpz_init(SM.y);
+    mpz_set(Q.x, pubkey.x); mpz_set(Q.y, pubkey.y);
+    if(mpz_tstbit(Q.y, 0) != 0) {
+        Point_Negation(&Q);
+    }
+    mpz_set_str(t, Tagged_Hash(Q.x), 16);
+    Scalar_Multiplication(&SM, t);
+    Point_Addition(Q, SM, &Q);
+    char * tweaked_pubkey = mpz_get_str(NULL, 16, Q.x);
+    mpz_clear(t);
+    mpz_clear(Q.x); mpz_clear(Q.y);
+    mpz_clear(SM.x); mpz_clear(SM.y);
+    return tweaked_pubkey;
 }
 
-const char * Point_To_Bech32m_P2TR_Address() { // to be continued not complete
-    char pub[] = "da4710964f7852695de2da025290e24af6d8c281de5a0b902b7135fd9fd74d21";
-    gmp_snprintf(cpub, 68, "%s", pub);
+const char * Point_To_Bech32m_P2TR_Address(struct Point pubkey) {
+    gmp_snprintf(cpub, 68, "%064s", Point_To_Taproot_Tweaked_Pubkey(pubkey));
     hexs2bin(cpub, bin_publickey);
     segwit_addr_encode(bech32_output, "bc", 1, bin_publickey, 32);
     return bech32_output;
@@ -410,34 +425,40 @@ int main(int argc, char *argv[])
     mpz_set_str(Curve_G.x, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", 0);
     mpz_set_str(Curve_G.y, "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", 0);
     
-    struct Point R;
+    struct Point R, stride_Point;
+    mpz_t m, stride;
     mpz_init(R.x); mpz_init(R.y);
-    mpz_set(R.x, Curve_G.x); mpz_set(R.y, Curve_G.y);
-    
-    mpz_t m;
-    mpz_init(m);
+    mpz_init(stride_Point.x); mpz_init(stride_Point.y);
+    mpz_init(m); mpz_init(stride);
+    mpz_set_str(m, "0x1", 0);
+    Scalar_Multiplication(&R, m);
+    mpz_set_str(stride, "0x1", 0);
+    Scalar_Multiplication(&stride_Point, m);
     
     //char pub[] = "0397c4e775d49f77c67f0ca9486d0694c8df1ab67e7d7fdb64d8413b79d8409f8c";
     puts("");
     struct timeval  tv1, tv2;
     gettimeofday(&tv1, NULL);
     
-    mpz_set_str(m, "0x8b8f7d3fdd5f346b728775a60212427a0fd474607ce951c7774412fe9ca27685", 0);
-    gmp_printf("Taproot Tweaked privkey: %064s\n", Taproot_Tweak_PrivKey(m));
-    gmp_printf("WIF_U: %s\n", Private_Key_To_WIF(m, false)); // WIF Uncompressed
-    gmp_printf("WIF_C: %s\n", Private_Key_To_WIF(m, true)); // WIF Compressed
-    gmp_printf("Address_Bech32m_P2TR: %s\n", Point_To_Bech32m_P2TR_Address()); // Bech32 P2TR Address
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 4; i++) {
+        gmp_printf("Private key: %0.64Zx\n", m);
+        gmp_printf("WIF_U: %s\n", Private_Key_To_WIF(m, false)); // WIF Uncompressed
+        gmp_printf("WIF_C: %s\n", Private_Key_To_WIF(m, true)); // WIF Compressed
         gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
+        gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false)); // Hash160 Uncompressed
+        gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true)); // Hash160 Compressed
         gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(R, false)); // P2PKH Uncompressed Address
         gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(R, true)); // P2PKH Compressed Address
         gmp_printf("Address_P2SH: %s\n", Point_To_P2SH_Address(R)); // P2SH Address
         gmp_printf("Address_Bech32_P2WPKH: %s\n", Point_To_Bech32_P2WPKH_Address(R)); // Bech32 P2WPKH Address
         gmp_printf("Address_Bech32_P2WSH: %s\n", Point_To_Bech32_P2WSH_Address(R)); // Bech32 P2WSH Address
-        gmp_printf("Hash160_U: %s\n", Point_To_Hash160(R, false)); // Hash160 Uncompressed
-        gmp_printf("Hash160_C: %s\n", Point_To_Hash160(R, true)); // Hash160 Compressed
-        Point_Addition(R, Curve_G, &R);
+        gmp_printf("Address_Bech32m_P2TR: %s\n", Point_To_Bech32m_P2TR_Address(R)); // P2TR Taproot Address
+        gmp_printf("Taproot Tweaked privkey: %064s\n", Taproot_Tweaked_PrivKey(m)); // Taproot tweaked privkey
+        gmp_printf("Taproot Tweaked pubkey: %064s\n", Point_To_Taproot_Tweaked_Pubkey(R)); // Taproot tweaked pubkey
+        mpz_add(m, m, stride);
+        Point_Addition(R, stride_Point, &R);
         //if (strcmp(Point_To_Cpub(Q), pub) == 0) { printf("Point %s found\n", Point_To_Cpub(R)); }
+        puts("");
     }
 
     puts("");
@@ -447,6 +468,6 @@ int main(int argc, char *argv[])
     mpz_clear(EC.a); mpz_clear(EC.b); mpz_clear(EC.p); mpz_clear(EC.n); // free memory for mpz variables
     mpz_clear(Curve_G.x); mpz_clear(Curve_G.y);
     mpz_clear(R.x); mpz_clear(R.y);
-    mpz_clear(m);
+    mpz_clear(m); mpz_clear(stride);
     return 0;
 }
