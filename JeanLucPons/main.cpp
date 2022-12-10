@@ -13,7 +13,7 @@ int main() {
     //Point pub = secp256k1->ComputePublicKey(&privKey);
     //string calcAddress = secp->GetAddress(1, false, pub);
     //printf("Pub : %s \n", secp256k1->GetPublicKeyHex(false, pub));
-    Point S = (secp256k1->G);
+    //Point S = (secp256k1->G);
     //Point Q;
     Point P = secp256k1->Double(S);
     //G2.Reduce();
