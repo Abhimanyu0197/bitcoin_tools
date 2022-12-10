@@ -246,22 +246,27 @@ Point Secp256K1::AddDirect(Point &p1,Point &p2) {
   Int dx;
   Point r;
   r.z.SetInt32(1);
+  if (p1.equals(p2)) {
+      r = Double(p1);
+      return r;
+  } else {
 
-  dy.ModSub(&p2.y,&p1.y);
-  dx.ModSub(&p2.x,&p1.x);
-  dx.ModInv();
-  _s.ModMulK1(&dy,&dx);     // s = (p2.y-p1.y)*inverse(p2.x-p1.x);
+      dy.ModSub(&p2.y,&p1.y);
+      dx.ModSub(&p2.x,&p1.x);
+      dx.ModInv();
+      _s.ModMulK1(&dy,&dx);     // s = (p2.y-p1.y)*inverse(p2.x-p1.x);
 
-  _p.ModSquareK1(&_s);       // _p = pow2(s)
+      _p.ModSquareK1(&_s);       // _p = pow2(s)
 
-  r.x.ModSub(&_p,&p1.x);
-  r.x.ModSub(&p2.x);       // rx = pow2(s) - p1.x - p2.x;
+      r.x.ModSub(&_p,&p1.x);
+      r.x.ModSub(&p2.x);       // rx = pow2(s) - p1.x - p2.x;
 
-  r.y.ModSub(&p2.x,&r.x);
-  r.y.ModMulK1(&_s);
-  r.y.ModSub(&p2.y);       // ry = - p2.y - s*(ret.x-p2.x);
+      r.y.ModSub(&p2.x,&r.x);
+      r.y.ModMulK1(&_s);
+      r.y.ModSub(&p2.y);       // ry = - p2.y - s*(ret.x-p2.x);
 
-  return r;
+      return r;
+  }
 }
 
 
