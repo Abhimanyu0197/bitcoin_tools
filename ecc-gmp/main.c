@@ -41,8 +41,8 @@ int main(void) {
     gettimeofday(&tv1, NULL);
 
     for (int i = 0; i < 1000000; i++) {
-        //ecc_add(&Res, &JP, &JG, &secp256k1);
-        ecc_add_mix(&Res, &JP, &G, &secp256k1);
+        ecc_add(&Res, &JP, &JG, &secp256k1);
+        //ecc_add_mix(&Res, &JP, &G, &secp256k1);
         //ecc_print_jcb(&Res);
         //ecc_jcb_to_afn(&R, &Res, &secp256k1);
         //ecc_print_afn(&R);
