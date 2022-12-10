@@ -23,7 +23,7 @@ int main() {
     //printf("Pub : %s \n", secp256k1->GetPublicKeyHex(true, G3));
     struct timeval  tv1, tv2;
     gettimeofday(&tv1, NULL);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 1000000; i++) {
         //P.Reduce();
         //printf("Pub : %s \n", secp256k1->GetPublicKeyHex(true, P));
         //P = secp256k1->Add(P, secp256k1->G); // a little slower than Add2
