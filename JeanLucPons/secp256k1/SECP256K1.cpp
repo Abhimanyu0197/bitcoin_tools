@@ -246,22 +246,27 @@ Point Secp256K1::AddDirect(Point &p1,Point &p2) {
   Int dx;
   Point r;
   r.z.SetInt32(1);
+  if (p1.equals(p2)) {
+      r = Double(p1);
+      return r;
+  } else {
 
-  dy.ModSub(&p2.y,&p1.y);
-  dx.ModSub(&p2.x,&p1.x);
-  dx.ModInv();
-  _s.ModMulK1(&dy,&dx);     // s = (p2.y-p1.y)*inverse(p2.x-p1.x);
+      dy.ModSub(&p2.y,&p1.y);
+      dx.ModSub(&p2.x,&p1.x);
+      dx.ModInv();
+      _s.ModMulK1(&dy,&dx);     // s = (p2.y-p1.y)*inverse(p2.x-p1.x);
 
-  _p.ModSquareK1(&_s);       // _p = pow2(s)
+      _p.ModSquareK1(&_s);       // _p = pow2(s)
 
-  r.x.ModSub(&_p,&p1.x);
-  r.x.ModSub(&p2.x);       // rx = pow2(s) - p1.x - p2.x;
+      r.x.ModSub(&_p,&p1.x);
+      r.x.ModSub(&p2.x);       // rx = pow2(s) - p1.x - p2.x;
 
-  r.y.ModSub(&p2.x,&r.x);
-  r.y.ModMulK1(&_s);
-  r.y.ModSub(&p2.y);       // ry = - p2.y - s*(ret.x-p2.x);
+      r.y.ModSub(&p2.x,&r.x);
+      r.y.ModMulK1(&_s);
+      r.y.ModSub(&p2.y);       // ry = - p2.y - s*(ret.x-p2.x);
 
-  return r;
+      return r;
+  }
 }
 
 
@@ -280,29 +285,34 @@ Point Secp256K1::Add2(Point &p1, Point &p2) {
   Int vs3u2;
   Int _2vs2v2;
   Point r;
-  u1.ModMulK1(&p2.y, &p1.z);
-  v1.ModMulK1(&p2.x, &p1.z);
-  u.ModSub(&u1, &p1.y);
-  v.ModSub(&v1, &p1.x);
-  us2.ModSquareK1(&u);
-  vs2.ModSquareK1(&v);
-  vs3.ModMulK1(&vs2, &v);
-  us2w.ModMulK1(&us2, &p1.z);
-  vs2v2.ModMulK1(&vs2, &p1.x);
-  _2vs2v2.ModAdd(&vs2v2, &vs2v2);
-  a.ModSub(&us2w, &vs3);
-  a.ModSub(&_2vs2v2);
+  if (p1.equals(p2)) {
+      r = Double(p1);
+      return r;
+  } else {
+      u1.ModMulK1(&p2.y, &p1.z);
+      v1.ModMulK1(&p2.x, &p1.z);
+      u.ModSub(&u1, &p1.y);
+      v.ModSub(&v1, &p1.x);
+      us2.ModSquareK1(&u);
+      vs2.ModSquareK1(&v);
+      vs3.ModMulK1(&vs2, &v);
+      us2w.ModMulK1(&us2, &p1.z);
+      vs2v2.ModMulK1(&vs2, &p1.x);
+      _2vs2v2.ModAdd(&vs2v2, &vs2v2);
+      a.ModSub(&us2w, &vs3);
+      a.ModSub(&_2vs2v2);
 
-  r.x.ModMulK1(&v, &a);
+      r.x.ModMulK1(&v, &a);
 
-  vs3u2.ModMulK1(&vs3, &p1.y);
-  r.y.ModSub(&vs2v2, &a);
-  r.y.ModMulK1(&r.y, &u);
-  r.y.ModSub(&vs3u2);
+      vs3u2.ModMulK1(&vs3, &p1.y);
+      r.y.ModSub(&vs2v2, &a);
+      r.y.ModMulK1(&r.y, &u);
+      r.y.ModSub(&vs3u2);
 
-  r.z.ModMulK1(&vs3, &p1.z);
+      r.z.ModMulK1(&vs3, &p1.z);
 
-  return r;
+      return r;
+  }
 }
 
 Point Secp256K1::Add(Point &p1,Point &p2) {
@@ -344,33 +354,37 @@ Point Secp256K1::Add(Point &p1,Point &p2) {
   Z3 = V ^ 3 * W
   return (X3, Y3, Z3)
   */
+  if (p1.equals(p2)) {
+      r = Double(p1);
+      return r;
+  } else {
+      u1.ModMulK1(&p2.y,&p1.z);
+      u2.ModMulK1(&p1.y,&p2.z);
+      v1.ModMulK1(&p2.x,&p1.z);
+      v2.ModMulK1(&p1.x,&p2.z);
+      u.ModSub(&u1,&u2);
+      v.ModSub(&v1,&v2);
+      w.ModMulK1(&p1.z,&p2.z);
+      us2.ModSquareK1(&u);
+      vs2.ModSquareK1(&v);
+      vs3.ModMulK1(&vs2,&v);
+      us2w.ModMulK1(&us2,&w);
+      vs2v2.ModMulK1(&vs2,&v2);
+      _2vs2v2.ModAdd(&vs2v2,&vs2v2);
+      a.ModSub(&us2w,&vs3);
+      a.ModSub(&_2vs2v2);
 
-  u1.ModMulK1(&p2.y,&p1.z);
-  u2.ModMulK1(&p1.y,&p2.z);
-  v1.ModMulK1(&p2.x,&p1.z);
-  v2.ModMulK1(&p1.x,&p2.z);
-  u.ModSub(&u1,&u2);
-  v.ModSub(&v1,&v2);
-  w.ModMulK1(&p1.z,&p2.z);
-  us2.ModSquareK1(&u);
-  vs2.ModSquareK1(&v);
-  vs3.ModMulK1(&vs2,&v);
-  us2w.ModMulK1(&us2,&w);
-  vs2v2.ModMulK1(&vs2,&v2);
-  _2vs2v2.ModAdd(&vs2v2,&vs2v2);
-  a.ModSub(&us2w,&vs3);
-  a.ModSub(&_2vs2v2);
+      r.x.ModMulK1(&v,&a);
 
-  r.x.ModMulK1(&v,&a);
+      vs3u2.ModMulK1(&vs3,&u2);
+      r.y.ModSub(&vs2v2,&a);
+      r.y.ModMulK1(&r.y,&u);
+      r.y.ModSub(&vs3u2);
 
-  vs3u2.ModMulK1(&vs3,&u2);
-  r.y.ModSub(&vs2v2,&a);
-  r.y.ModMulK1(&r.y,&u);
-  r.y.ModSub(&vs3u2);
+      r.z.ModMulK1(&vs3,&w);
 
-  r.z.ModMulK1(&vs3,&w);
-
-  return r;
+      return r;
+  }
 }
 
 Point Secp256K1::DoubleDirect(Point &p) {
