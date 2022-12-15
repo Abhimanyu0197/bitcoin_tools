@@ -17,6 +17,8 @@ char *ltrim(char *str, const char *seps);
 char *rtrim(char *str, const char *seps);
 char *trim(char *str, const char *seps);
 int indexOf(char *s,const char **array,int length_array);
+void textToBinary(char *text, int textLength, char *binary, int binaryLength);
+void decimalToBinary(int decimal, char *octet);
 int hexchr2bin(char hex, char *out);
 int hexs2bin(char *hex, unsigned char *out);
 char *tohex(char *ptr,int length);
