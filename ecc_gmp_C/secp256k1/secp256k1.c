@@ -1,20 +1,14 @@
-#include <stdio.h>
+#include <gmp.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-//#include <time.h>
-#include <sys/time.h>
-#include <gmp.h>
-
-#include "base58/libbase58.h"
-#include "rmd160/rmd160.h"
-#include "sha256/sha256.h"
-#include "bech32m/segwit_addr.h"
-#include "util.h"
-
-typedef struct { mpz_t a; mpz_t b; mpz_t p; mpz_t n; } Elliptic_Curve;
-typedef struct { mpz_t x; mpz_t y; } Affine_Point;
-typedef struct { mpz_t x; mpz_t y; mpz_t z; } Jacobian_Point;
+#include <stdint.h>
+#include "secp256k1.h"
+#include "../util.h"
+#include "../base58/libbase58.h"
+#include "../rmd160/rmd160.h"
+#include "../sha256/sha256.h"
+#include "../bech32/segwit_addr.h"
 
 Elliptic_Curve EC;
 Affine_Point Curve_Generator, A1Temp, A2Temp, AffinePoint, TapPoint;
@@ -23,6 +17,23 @@ mpz_t u1, v1, u, v, us2, vs2, vs3, usw2, vs2v2, _2vs2v2, a, vs3u2;
 mpz_t z2, x2, _3x2, w, s, s2, b, _8b, _8y2s2, y2, h;
 mpz_t slope, temp, tap_t, seckey, tap_s;
 mpz_t X, Y;
+char tap_tweak[] = "TapTweak";
+static char upub[132];
+static char cpub[68];
+static char address[50];
+static char hash160[42];
+static char bech32_output[128];
+static char wif[54];
+static char bin_publickey[65];
+static char bin_sha256[32];
+static char bin_digest[60];
+static char bin_rmd160[20];
+static char privatekey[66];
+static char bin_privatekey[39];
+static char hex_mpz[66];
+static char pub_bin[33];
+static char taghash[33];
+static char taghash_final[99];
 
 void init_JacobianPoint(Jacobian_Point *J) { mpz_inits(J->x, J->y, J->z, NULL); return; }
 void clear_JacobianPoint(Jacobian_Point *J) { mpz_clears(J->x, J->y, J->z, NULL); return; }
@@ -244,6 +255,48 @@ void Point_Addition(Affine_Point *A, Affine_Point *A1, Affine_Point *A2) {
     }
 }
 
+void Point_Addition2(Affine_Point *A, Affine_Point *A1, Affine_Point *A2) {
+    mpz_set(A1Temp.x, A1->x); mpz_set(A1Temp.y, A1->y);
+    mpz_set(A2Temp.x, A2->x); mpz_set(A2Temp.y, A2->y);
+    if(mpz_cmp_ui(A1->x, 0) == 0 && mpz_cmp_ui(A1->y, 0) == 0) {
+        mpz_set(A->x, A2->x);
+        mpz_set(A->y, A2->y);
+        return;
+    }
+    if(mpz_cmp_ui(A2->x, 0) == 0 && mpz_cmp_ui(A2->y, 0) == 0) {
+        mpz_set(A->x, A1->x);
+        mpz_set(A->y, A1->y);
+        return;
+    }
+    if(mpz_cmp(A1->x, A2->x) == 0 && mpz_cmp(A1->y, A2->y) != 0) {
+        mpz_set_ui(A->x, 0);
+        mpz_set_ui(A->y, 0);
+        return;
+    }
+    if(mpz_cmp(A1->x, A2->x) == 0 && mpz_cmp(A1->y, A2->y) == 0) {
+        Point_Doubling(A, A1);
+        return;
+    } else {
+
+        mpz_sub(u, A2->y, A1->y);
+        mpz_sub(v, A2->x, A1->x);
+        mpz_invert(v, v, EC.p);
+        mpz_mul(slope, u, v);
+        mpz_mod(slope, slope, EC.p);
+
+        mpz_mul(A->x, slope, slope);
+        mpz_sub(A->x, A->x, A1Temp.x);
+        mpz_sub(A->x, A->x, A2Temp.x);
+        mpz_mod(A->x, A->x, EC.p);
+
+        mpz_sub(temp, A1Temp.x, A->x);
+        mpz_mul(A->y, slope, temp);
+        mpz_sub(A->y, A->y, A1Temp.y);
+        mpz_mod(A->y, A->y, EC.p);
+        return;
+    }
+}
+
 void Scalar_Multiplication(Affine_Point *A, const mpz_t m) {
     int no_of_bits, loop;
     no_of_bits = mpz_sizeinbase(m, 2);
@@ -309,24 +362,6 @@ bool Point_On_Curve(const Affine_Point *A) {
         return false;
     }
 }
-
-static char upub[132];
-static char cpub[68];
-static char address[50];
-static char hash160[42];
-static char bech32_output[128];
-static char wif[54];
-static char bin_publickey[65];
-static char bin_sha256[32];
-static char bin_digest[60];
-static char bin_rmd160[20];
-static char privatekey[66];
-static char bin_privatekey[39];
-static char hex_mpz[66];
-static char pub_bin[33];
-static char taghash[33];
-static char taghash_final[99];
-const char tap_tweak[] = "TapTweak";
 
 const char * Point_To_Upub(const Affine_Point *A) {
     gmp_snprintf(upub, 132, "04%0.64Zx%0.64Zx", A->x, A->y);
@@ -544,63 +579,4 @@ void secp256k1_context_clear() {
     mpz_clears(temp, slope, tap_t, seckey, tap_s, NULL);
     mpz_clears(X, Y, NULL);
     return;
-}
-
-int main(int argc, char *argv[])
-{
-    secp256k1_context_init();
-
-    Affine_Point R, stride_Point;
-    init_AffinePoint(&R); init_AffinePoint(&stride_Point);
-    mpz_t m, stride;
-    mpz_inits(m, stride, NULL);
-    mpz_set_str(m, "0x1", 0);
-    mpz_set_str(stride, "0x1", 0);
-    Scalar_Multiplication(&R, m);
-    Scalar_Multiplication(&stride_Point, stride);
-
-    Jacobian_Point JP, JQ;
-    init_set_JacobianPoint(&JP, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", "0x1");
-    init_set_JacobianPoint(&JQ, "0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", "0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", "0x1");
-
-    puts("");
-    struct timeval  tv1, tv2;
-    gettimeofday(&tv1, NULL);
-
-    for (int i = 0; i < 10; i++) {
-
-        gmp_printf("Private key: %0.64Zx\n", m);
-        gmp_printf("WIF_U: %s\n", Private_Key_To_WIF(m, false)); // WIF Uncompressed
-        gmp_printf("WIF_C: %s\n", Private_Key_To_WIF(m, true)); // WIF Compressed
-        gmp_printf("X:%0.64Zx Y:%0.64Zx\n", R.x, R.y);
-        gmp_printf("Hash160_U: %s\n", Point_To_Hash160(&R, false)); // Hash160 Uncompressed
-        gmp_printf("Hash160_C: %s\n", Point_To_Hash160(&R, true)); // Hash160 Compressed
-        gmp_printf("Address_U: %s\n", Point_To_Legacy_Address(&R, false)); // P2PKH Uncompressed Address
-        gmp_printf("Address_C: %s\n", Point_To_Legacy_Address(&R, true)); // P2PKH Compressed Address
-        gmp_printf("Address_P2SH: %s\n", Point_To_P2SH_Address(&R)); // P2SH Address
-        gmp_printf("Address_Bech32_P2WPKH: %s\n", Point_To_Bech32_P2WPKH_Address(&R)); // Bech32 P2WPKH Address
-        gmp_printf("Address_Bech32_P2WSH: %s\n", Point_To_Bech32_P2WSH_Address(&R)); // Bech32 P2WSH Address
-        gmp_printf("Address_Bech32m_P2TR: %s\n", Point_To_Bech32m_P2TR_Address(&R)); // P2TR Taproot Address
-        gmp_printf("Taproot Tweaked privkey: %064s\n", Taproot_Tweaked_PrivKey(m)); // Taproot tweaked privkey
-        gmp_printf("Taproot Tweaked pubkey: %064s\n", Point_To_Taproot_Tweaked_Pubkey(&R)); // Taproot tweaked pubkey
-        mpz_add(m, m, stride);
-        //Point_Addition(&R, &R, &stride_Point);
-        JacobianPoint_Addition(&JP, &JP, &JQ);
-        JacobianPoint_To_AffinePoint(&JP, &R);
-        //if (strcmp(Point_To_Cpub(Q), pub) == 0) { printf("Point %s found\n", Point_To_Cpub(R)); }
-        puts("");
-    }
-
-    puts("");
-    gettimeofday(&tv2, NULL);
-    printf ("Total time = %f seconds\n", (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec));
-
-    clear_AffinePoint(&R);
-    clear_AffinePoint(&stride_Point);
-    clear_JacobianPoint(&JP);
-    clear_JacobianPoint(&JQ);
-    mpz_clears(m, stride, NULL);
-
-    secp256k1_context_clear();
-    return 0;
 }
